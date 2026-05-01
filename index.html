@@ -13,11 +13,22 @@
   The page is built in vanilla HTML/CSS/JS with no framework and no
   build step, consistent with the rest of veil.
 
-  Structure:
+  The <head> includes canonical meta tags (description, og, twitter,
+  CSP, viewport) and three JSON-LD structured data blocks. The
+  SoftwareApplication and SoftwareSourceCode blocks help search
+  engines and LLMs disambiguate the live app and the GitHub
+  repository as the same project. The FAQPage block is primarily
+  for LLM extraction (which uses structured data heavily); on
+  Google SERP it will not produce a rich snippet because Google
+  restricted FAQ rich results to government and health sites in
+  August 2023. All three blocks are inert data, not executable
+  scripts, and do not change the rendered page.
+
+  Body structure:
   1. Navbar with wordmark, GitHub, Support, and CTA
   2. Hero with rotating text, before/after slider, and badges
   3. Exploded layers animation (scroll-driven, built in landing.js)
-  4. OCR callout (unique feature, no other reader does this)
+  4. OCR callout (text inside images becomes selectable)
   5. Workflow cards (export, links, offline)
   6. Donate section (Ko-fi, free forever)
   7. Footer with credits and links
@@ -57,6 +68,141 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="landing.css" />
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    "name": "veil",
+    "alternateName": "Veil PDF Reader",
+    "description": "Open source PDF reader with smart dark mode. Preserves images, charts, and diagrams. Client-side, no AI, no tracking. MIT licensed.",
+    "applicationCategory": "ProductivityApplication",
+    "applicationSubCategory": "PDF Reader",
+    "operatingSystem": "Web",
+    "browserRequirements": "Requires JavaScript and a modern browser",
+    "url": "https://veil.simoneamico.com/",
+    "downloadUrl": "https://veil.simoneamico.com/reader",
+    "softwareVersion": "1.0.0",
+    "datePublished": "2026-03-26",
+    "license": "https://opensource.org/licenses/MIT",
+    "isAccessibleForFree": true,
+    "offers": {
+      "@type": "Offer",
+      "price": "0",
+      "priceCurrency": "USD"
+    },
+    "author": {
+      "@type": "Person",
+      "name": "Simone Amico",
+      "url": "https://simoneamico.com"
+    },
+    "codeRepository": "https://github.com/simoneamico-ux-dev/veil",
+    "programmingLanguage": "JavaScript",
+    "featureList": [
+      "Dark mode that preserves images and charts",
+      "OCR on embedded images via Tesseract.js",
+      "Export to dark mode PDF with selectable text",
+      "Link annotations preserved (internal and external)",
+      "Works offline as installable PWA",
+      "100% client-side, files never leave the device",
+      "22 writing systems supported in export"
+    ]
+  }
+  </script>
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "SoftwareSourceCode",
+    "name": "veil",
+    "codeRepository": "https://github.com/simoneamico-ux-dev/veil",
+    "programmingLanguage": "JavaScript",
+    "license": "https://opensource.org/licenses/MIT",
+    "author": {
+      "@type": "Person",
+      "name": "Simone Amico",
+      "url": "https://simoneamico.com"
+    },
+    "isPartOf": {
+      "@type": "SoftwareApplication",
+      "name": "veil",
+      "url": "https://veil.simoneamico.com/"
+    }
+  }
+  </script>
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "How does veil keep images intact in dark mode?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "veil walks the PDF.js operator list to detect image regions, then composites the original image pixels over the inverted background using a second canvas. Photos, charts, histology slides, and microscopy images keep their original colors while text and backgrounds are inverted."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Is veil free?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Yes. veil is free and open source under the MIT license. There is no signup, no account, no paid tier. Anyone can fork, modify, or self-host."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Where do my PDFs go when I open them in veil?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Nowhere. veil runs entirely in your browser. PDFs are processed locally on your device and never leave it. The app works offline after the first visit and has no server-side component."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Can I save a dark mode PDF that opens in other readers?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Yes. veil exports a PDF with selectable text, working internal and external links, and images preserved in their original colors. The exported file opens correctly in any standard PDF reader on any device."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Does veil work on scanned PDFs?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Yes. veil detects scanned documents automatically and runs OCR in the background via Tesseract.js. The recognized text becomes a selectable layer. Scans with embedded invisible OCR text layers (a format used by some scanning tools) are also detected and inverted correctly."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "What does veil do that a dark mode browser extension doesn't?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Browser extensions invert every pixel including images, which destroys photos, charts, and figures. veil detects image regions structurally via the PDF operator list and protects them from inversion. The result is dark mode that respects color-critical content like medical imaging, histology, and scientific figures."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Does veil use AI?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "No. veil contains no AI, no machine learning models, no neural networks. Image regions are detected via deterministic operator list walking with a transformation matrix stack. OCR via Tesseract.js is statistical pattern recognition, not generative AI."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Why isn't veil's dark mode pure black?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "veil uses invert(0.86) instead of full inversion because pure black backgrounds with pure white text are too harsh for long reading sessions. 0.86 produces a soft dark gray (around #242424) and a slightly muted white (around #DBDBDB), which reduces eye strain on prolonged use."
+        }
+      }
+    ]
+  }
+  </script>
 </head>
 <body>
   <a href="#main-content" class="skip-link">Skip to content</a>
