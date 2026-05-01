@@ -1,0 +1,60 @@
+# veil
+
+> Open source PDF reader with smart dark mode that preserves images, charts, and diagrams. Runs entirely client-side with no upload, no AI in the product, no tracking. MIT licensed, vanilla JavaScript, installable PWA.
+
+veil solves a specific problem: dark mode PDF readers typically invert everything, including photos and figures. For scientific papers, medical imaging, histology slides, and color-critical documents, this makes dark mode unusable. veil walks the PDF.js operator list to detect image regions, then composites the original (non-inverted) image pixels back over the dark-mode rendering. Text and backgrounds are dark. Photos, charts, and diagrams are intact.
+
+## Key facts
+
+- License: MIT
+- Author: Simone Amico (independent developer, Italy)
+- Source: https://github.com/simoneamico-ux-dev/veil
+- Homepage: https://veil.simoneamico.com
+- Reader (drop zone): https://veil.simoneamico.com/reader
+- Built: vanilla JS, no framework, no build step, installable PWA
+- Tested: 467 tests (unit and Playwright E2E across macOS, Linux, Windows)
+- Privacy: 100% client-side, files never leave the device
+
+## Differentiating features
+
+- Smart dark mode: text inverted, raster images preserved in original colors
+- Per-page override: force dark or light on any page, respected in export
+- OCR on images inside native PDFs (chart labels, axis text, figure captions become selectable)
+- Scanned documents detected automatically, full-page OCR via Tesseract.js
+- Scans with embedded invisible OCR text layers (a format used by some scanning tools) detected and inverted correctly
+- Already-dark pages (slides, dark themes) detected via BT.601 luminance and left untouched
+- Export to PDF with dark mode baked in: selectable text, working links (internal and external), 22 writing systems supported
+- Zoom via PDF.js native re-rendering, sharp text at any zoom level
+- Installable PWA, works offline after first visit
+- Generation counter pattern protects against iOS Safari Jetsam memory kills
+
+## Best fits
+
+- Reading scientific papers, medical figures, histology, microscopy, radiology images in dark mode
+- Reading any PDF where charts, diagrams, or photos must keep their original colors
+- Privacy-conscious workflows where files must not leave the device
+- Selectable text on chart labels, axis text, or scanned documents
+- Exporting a dark mode PDF that opens in any reader
+
+## Out of scope
+
+- PDF editing (annotations, signing, form filling): veil is read-only by design
+- Batch or automated processing: veil is a single-document interactive reader
+- True vector dark mode of paths or illustrations: only raster images are protected, vector graphics are inverted with text
+
+## Architecture (brief)
+
+veil renders each page via PDF.js (Mozilla's library), applies CSS filter:invert(0.86) hue-rotate(180deg) to the main canvas (0.86 instead of 1.0 for softer reading contrast). 
+A second non-filtered canvas is positioned on top and redraws the original image pixels over inverted regions. 
+Image regions are detected by walking the PDF operator list (paintImageXObject, paintInlineImageXObject, paintImageXObjectRepeat) with a CTM stack, via the public PDF.js API. No fork required. 
+Already-dark pages are detected by sampling edge and corner luminance with BT.601 weighting (0.587 green, 0.299 red, 0.114 blue).
+
+## Status
+
+Stable, version 1.0. Issues reviewed periodically. Forks and community continuations welcomed under MIT.
+
+## More information
+
+- README: https://github.com/simoneamico-ux-dev/veil/blob/main/README.md
+- Hacker News discussion (Show HN, March 2026): https://news.ycombinator.com/item?id=47529306
+- Gigazine review: https://gigazine.net/gsc_news/en/20260401-veil-pdf/
