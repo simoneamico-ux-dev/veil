@@ -1,7 +1,8 @@
 {
   "name": "veil",
   "short_name": "veil",
-  "description": "Dark mode PDFs without destroying your images",
+  "description": "Open source PDF reader with image-preserving dark mode. Inverts text and backgrounds, leaves photos and charts intact. Runs entirely client-side.",
+  "categories": ["productivity", "utilities", "education"],
   "start_url": "./reader.html",
   "scope": "./",
   "display": "standalone",
