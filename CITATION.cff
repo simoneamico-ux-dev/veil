@@ -16,6 +16,16 @@ authors:
     affiliation: "Independent"
 date-released: 2026-03-26
 version: "1.0.0"
+identifiers:
+  - type: doi
+    value: "10.5281/zenodo.19989817"
+    description: "DOI for veil version 1.0.0"
+  - type: doi
+    value: "10.5281/zenodo.19989816"
+    description: "Concept DOI, always resolves to the latest version"
+  - type: swh
+    value: "swh:1:dir:02dd3113bbae8b73c2519706cc48e8813a00c958;origin=https://github.com/simoneamico-ux-dev/veil;visit=swh:1:snp:38b1770fff909a1864dd62d9d5e385654bf6c7b0;anchor=swh:1:rev:c3e6bbcb2ca56ed6cab33d44c44fd78d669d2df4"
+    description: "Software Heritage permanent archive of v1.0.0"
 url: "https://veil.simoneamico.com"
 repository-code: "https://github.com/simoneamico-ux-dev/veil"
 license: MIT
