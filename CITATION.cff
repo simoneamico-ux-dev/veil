@@ -1,0 +1,35 @@
+cff-version: 1.2.0
+message: "If you use veil in research or publication, please cite it as below."
+title: "veil: open source PDF reader with image-preserving dark mode"
+abstract: >-
+  veil is a client-side PDF reader that applies dark mode while preserving
+  the original colors of images, charts, and diagrams. It walks the PDF.js
+  operator list to detect image regions and composites the original pixels
+  over the inverted background. The reader also provides OCR via
+  Tesseract.js, export to dark-mode PDF with selectable text, and support
+  for 22 writing systems.
+authors:
+  - family-names: "Amico"
+    given-names: "Simone"
+    orcid: "https://orcid.org/0009-0008-9680-7250"
+    website: "https://simoneamico.com"
+    affiliation: "Independent"
+date-released: 2026-03-26
+version: "1.0.0"
+url: "https://veil.simoneamico.com"
+repository-code: "https://github.com/simoneamico-ux-dev/veil"
+license: MIT
+license-url: "https://github.com/simoneamico-ux-dev/veil/blob/main/LICENSE"
+type: software
+keywords:
+  - pdf
+  - pdf-reader
+  - dark-mode
+  - accessibility
+  - pwa
+  - ocr
+  - tesseract
+  - pdf-js
+  - vanilla-javascript
+  - privacy
+  - client-side
