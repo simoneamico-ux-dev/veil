@@ -32,7 +32,7 @@
 
 ## How it works
 
-Veil uses PDF.js to render each page, then applies CSS inversion for the dark background. A second canvas restores the original image pixels over the inverted regions, so photos, charts, and diagrams keep their true colors. Image detection walks the PDF operator list via the public API, no fork required.
+veil uses PDF.js to render each page, then applies CSS inversion for the dark background. A second canvas restores the original image pixels over the inverted regions, so photos, charts, and diagrams keep their true colors. Image detection walks the PDF operator list via the public API, no fork required.
 
 Scanned documents are detected by sampling a few pages. Tesseract.js runs OCR in the background, and the recognized text becomes a selectable layer. Language is picked up from your system preferences.
 

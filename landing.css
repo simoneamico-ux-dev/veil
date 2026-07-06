@@ -39,21 +39,21 @@
    * The stylesheet follows this flow:
    *
    * 1. DESIGN TOKENS (line 60)
-   * 2. RESET AND BASE (line 145)
-   * 3. UTILITY (line 162)
-   * 4. NAVBAR (line 194)
-   * 5. HERO (line 297)
-   * 6. BEFORE/AFTER (line 434)
-   * 7. EXPLODED LAYERS (line 741)
-   * 8. OCR (line 882)
-   * 9. WORKFLOW (line 983)
-   * 10. DONATE (line 1073)
-   * 11. FOOTER (line 1138)
-   * 12. LAYER DOCUMENT ELEMENTS (line 1189)
-   * 13. FOCUS STYLES (line 1244)
-   * 14. PAGE TRANSITION (line 1257)
-   * 15. REDUCED MOTION (line 1285)
-   * 16. HIGH CONTRAST (line 1329)
+   * 2. RESET AND BASE (line 143)
+   * 3. UTILITY (line 160)
+   * 4. NAVBAR (line 192)
+   * 5. HERO (line 295)
+   * 6. BEFORE/AFTER (line 416)
+   * 7. EXPLODED LAYERS (line 723)
+   * 8. OCR (line 864)
+   * 9. WORKFLOW (line 965)
+   * 10. DONATE (line 1055)
+   * 11. FOOTER (line 1120)
+   * 12. LAYER DOCUMENT ELEMENTS (line 1171)
+   * 13. FOCUS STYLES (line 1226)
+   * 14. PAGE TRANSITION (line 1239)
+   * 15. REDUCED MOTION (line 1267)
+   * 16. HIGH CONTRAST (line 1311)
 */
 
 
@@ -76,8 +76,6 @@
   --card-bg: #1C1C1C;
   --card-border: rgba(255,255,255,0.08);
   --accent-ghost: rgba(212,163,115,0.06);
-  --accent-border: rgba(212,163,115,0.1);
-  --accent-border-hover: rgba(212,163,115,0.14);
 
   /* Border radius */
   --radius-pill: 50px;
@@ -311,22 +309,6 @@ nav.scrolled {
   .hero { 
     padding: 120px var(--space-6) var(--space-15); 
   } 
-}
-.hero-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--space-2);
-  padding: var(--space-1) var(--space-4);
-  border-radius: var(--radius-pill);
-  background: var(--accent-ghost);
-  border: 1px solid var(--accent-border);
-  margin-bottom: var(--space-7);
-  font-size: var(--text-xs);
-  color: var(--accent);
-  font-weight: var(--font-medium);
-}
-@media (min-width: 700px) {
-  .hero-badge { font-size: var(--text-sm); }
 }
 h1 {
   font-size: 38px;
