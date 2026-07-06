@@ -1,10 +1,11 @@
 /* DESIGN
    ------
    * This stylesheet controls the landing page. The visual identity
-   * is warm and organic: amber accents on a dark brown base (#2a1f1a),
-   * not the cold blue-black typical of developer tools. The palette
-   * was inherited from a personal design system ("coffee and sand")
-   * and adapted for the dark theme.
+   * pairs veil's amber accent (#D4A373) with neutral greys (#191919
+   * base, #1C1C1C cards). The greys follow my personal design
+   * system; the amber stays from veil's original warm palette.
+   * Structural borders are white hairlines at 8% opacity, so the
+   * accent is the only warm element on the page.
    *
    * The page was originally built in React, then converted to vanilla
    * HTML/CSS/JS because React contradicted the project's philosophy
@@ -37,22 +38,22 @@
    *
    * The stylesheet follows this flow:
    *
-   * 1. DESIGN TOKENS (line 59)
-   * 2. RESET AND BASE (line 144)
-   * 3. UTILITY (line 161)
-   * 4. NAVBAR (line 193)
-   * 5. HERO (line 296)
-   * 6. BEFORE/AFTER (line 433)
-   * 7. EXPLODED LAYERS (line 740)
-   * 8. OCR (line 881)
-   * 9. WORKFLOW (line 982)
-   * 10. DONATE (line 1072)
-   * 11. FOOTER (line 1137)
-   * 12. LAYER DOCUMENT ELEMENTS (line 1188)
-   * 13. FOCUS STYLES (line 1243)
-   * 14. PAGE TRANSITION (line 1256)
-   * 15. REDUCED MOTION (line 1282)
-   * 16. HIGH CONTRAST (line 1326)
+   * 1. DESIGN TOKENS (line 60)
+   * 2. RESET AND BASE (line 145)
+   * 3. UTILITY (line 162)
+   * 4. NAVBAR (line 194)
+   * 5. HERO (line 297)
+   * 6. BEFORE/AFTER (line 434)
+   * 7. EXPLODED LAYERS (line 741)
+   * 8. OCR (line 882)
+   * 9. WORKFLOW (line 983)
+   * 10. DONATE (line 1073)
+   * 11. FOOTER (line 1138)
+   * 12. LAYER DOCUMENT ELEMENTS (line 1189)
+   * 13. FOCUS STYLES (line 1244)
+   * 14. PAGE TRANSITION (line 1257)
+   * 15. REDUCED MOTION (line 1285)
+   * 16. HIGH CONTRAST (line 1329)
 */
 
 
@@ -60,20 +61,20 @@
 
 :root {
   /* Palette */
-  --bg-base: #2a1f1a;
-  --text-primary: #f5efe2;
-  --text-secondary: #9a8878;
-  --text-muted: #7a6b5e;
-  --text-dim: #6b5d50;
+  --bg-base: #191919;
+  --text-primary: #E6E4E2;
+  --text-secondary: #9c9895;
+  --text-muted: #807c78;
+  --text-dim: #6e6a66;
   --accent: #D4A373;
   --accent-hover: #deb48a;
   --accent-active: #ba8d5e;
 
   /* Semantic */
-  --nav-bg: rgba(42,31,26,0.80);
-  --nav-bg-scrolled: rgba(42,31,26,0.88);
-  --card-bg: rgba(53,42,34,0.25);
-  --card-border: rgba(212,163,115,0.06);
+  --nav-bg: rgba(28,28,28,0.80);
+  --nav-bg-scrolled: rgba(28,28,28,0.88);
+  --card-bg: #1C1C1C;
+  --card-border: rgba(255,255,255,0.08);
   --accent-ghost: rgba(212,163,115,0.06);
   --accent-border: rgba(212,163,115,0.1);
   --accent-border-hover: rgba(212,163,115,0.14);
@@ -213,7 +214,7 @@ nav {
   background: var(--nav-bg);
   backdrop-filter: blur(20px) saturate(1.4);
   -webkit-backdrop-filter: blur(20px) saturate(1.4);
-  border: 1px solid rgba(212,163,115,0.07);
+  border: 1px solid var(--card-border);
   transition: all 0.4s var(--ease-spring);
 }
 
@@ -222,7 +223,7 @@ nav.scrolled {
   top: 10px;
   padding: var(--space-1) var(--space-4);
   background: var(--nav-bg-scrolled);
-  border-color: rgba(212,163,115,0.14);
+  border-color: rgba(255,255,255,0.14);
 }
 @media (min-width: 700px) {
   nav {
@@ -254,11 +255,11 @@ nav.scrolled {
 .nav-divider {
   width: 1px;
   height: 14px;
-  background: rgba(212,163,115,0.12);
+  background: rgba(255,255,255,0.08);
 }
 .nav-link {
   font-size: var(--text-sm);
-  color: #a89a8c;
+  color: #a5a19d;
   text-decoration: none;
   transition: color 0.2s;
   padding: var(--space-2) var(--space-1);
@@ -341,7 +342,7 @@ h1 {
   } 
 }
 .hero-sub {
-  color: rgba(245,239,226,0.45);
+  color: rgba(230,228,226,0.45);
   font-weight: var(--font-regular);
   font-size: 26px;
 }
@@ -421,7 +422,7 @@ h1 {
 }
 .hero-meta p {
   font-size: var(--text-2xs);
-  color: #8a7a6a;
+  color: #8b8783;
   margin: 0;
 }
 @media (min-width: 700px) {
@@ -468,7 +469,7 @@ h1 {
   border-radius: var(--radius-lg);
   overflow: hidden;
   cursor: ew-resize;
-  border: 1px solid rgba(212,163,115,0.12);
+  border: 1px solid rgba(255,255,255,0.12);
   user-select: none;
   -webkit-user-select: none;
 }
@@ -948,7 +949,7 @@ h1 {
 }
 .ocr-highlight {
   font-size: var(--text-sm);
-  color: #c4b5a3;
+  color: #c2bfbc;
   line-height: var(--leading-relaxed);
   margin: 0;
   max-width: 520px;
@@ -968,9 +969,9 @@ h1 {
   padding: var(--space-1) var(--space-3);
   border-radius: var(--radius-pill);
   background: var(--accent-ghost);
-  border: 1px solid rgba(212,163,115,0.12);
+  border: 1px solid var(--card-border);
   font-size: var(--text-2xs);
-  color: #a89682;
+  color: #a29e9a;
 }
 @media (min-width: 700px) {
   .ocr-tags span { font-size: var(--text-sm);
@@ -1056,7 +1057,7 @@ h1 {
 }
 .wf-desc {
   font-size: var(--text-xs);
-  color: #9a8a7c;
+  color: #999591;
   line-height: var(--leading-normal);
 }
 @media (min-width: 700px) {
@@ -1087,7 +1088,7 @@ h1 {
   margin: 0 auto;
   padding: var(--space-7) var(--space-5);
   border-radius: var(--radius-lg);
-  background: rgba(53,42,34,0.35);
+  background: var(--card-bg);
   border: 1px solid var(--card-border);
 }
 @media (min-width: 700px) { 
@@ -1097,7 +1098,7 @@ h1 {
 }
 .donate-text {
   font-size: var(--text-base);
-  color: #c4b5a3;
+  color: #c2bfbc;
   line-height: var(--leading-loose);
   margin: 0 0 var(--space-5);
   font-style: italic;
@@ -1119,7 +1120,7 @@ h1 {
   gap: var(--space-2);
   padding: var(--space-2) var(--space-6);
   border-radius: var(--radius-pill);
-  border: 1px solid rgba(212,163,115,0.2);
+  border: 1px solid rgba(255,255,255,0.2);
   font-size: var(--text-sm);
   font-weight: var(--font-medium);
   text-decoration: none;
@@ -1141,7 +1142,7 @@ footer {
   text-align: center;
   position: relative;
   z-index: 1;
-  border-top: 1px solid rgba(212,163,115,0.04);
+  border-top: 1px solid var(--card-border);
 }
 @media (min-width: 700px) { 
   footer { 
@@ -1175,7 +1176,7 @@ footer {
   line-height: 1;
   color: var(--text-muted);
 }
-.footer-slash { color: #4a3e35; }
+.footer-slash { color: #4c4a48; }
 .footer-credits a {
   color: var(--text-muted);
   text-decoration: none;
@@ -1275,7 +1276,9 @@ footer {
 }
 .page-transition-overlay.darken {
   opacity: 1;
-  background: #241e18;
+  /* Same as --bg-base: landing and drop screen now share the same
+     background, kept as a separate stage for the JS fade sequence */
+  background: #191919;
 }
 
 
@@ -1327,21 +1330,21 @@ footer {
 
 @media (prefers-contrast: more) {
   /* Text */
-  .hero-sub { color: rgba(245,239,226,0.7); }
-  .hero-desc { color: #c4b5a3; }
-  .hero-meta p { color: #b0a090; }
-  .layers-sub { color: #b0a090; }
-  .annot-lines { color: #b0a090; }
-  .ocr-desc { color: #c4b5a3; }
-  .wf-desc { color: #c4b5a3; }
-  .donate-bridge { color: #c4b5a3; }
+  .hero-sub { color: rgba(230,228,226,0.7); }
+  .hero-desc { color: #c2bfbc; }
+  .hero-meta p { color: #b0adaa; }
+  .layers-sub { color: #b0adaa; }
+  .annot-lines { color: #b0adaa; }
+  .ocr-desc { color: #c2bfbc; }
+  .wf-desc { color: #c2bfbc; }
+  .donate-bridge { color: #c2bfbc; }
   .footer-credits { color: var(--text-secondary); }
 
   /* Borders */
-  .ocr-card { border-color: rgba(212,163,115,0.2); }
-  .workflow-card { border-color: rgba(212,163,115,0.15); }
-  .donate-card { border-color: rgba(212,163,115,0.15); }
-  nav { border-color: rgba(212,163,115,0.2); }
+  .ocr-card { border-color: rgba(255,255,255,0.2); }
+  .workflow-card { border-color: rgba(255,255,255,0.15); }
+  .donate-card { border-color: rgba(255,255,255,0.15); }
+  nav { border-color: rgba(255,255,255,0.2); }
 
   /* Separators */
   .sep { opacity: 0.55; }

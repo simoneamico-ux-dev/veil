@@ -10,6 +10,12 @@
    * #1a1510) and cream text (#f5efe2) reduce this while maintaining
    * high contrast.
    *
+   * The drop screen (drop zone, app shell loader, page transitions)
+   * follows the landing page instead: neutral greys (#191919 base,
+   * #1C1C1C cards) with the same amber accent (#D4A373). The reading
+   * chrome keeps the warm palette because it is calibrated against
+   * the inverted page canvas for long sessions.
+   *
    * The design system uses CSS custom properties (:root tokens) for
    * every color, spacing value, radius, and z-index. This ensures
    * visual consistency and makes theme changes a matter of updating
@@ -34,32 +40,32 @@
    *
    * The stylesheet follows this flow:
    *
-   * 1. RESET (line 66)
-   * 2. DESIGN TOKENS (line 77)
-   * 3. BASE (line 174)
-   * 4. PAGE TRANSITION (line 197)
-   * 5. DROP ZONE (line 220)
+   * 1. RESET (line 72)
+   * 2. DESIGN TOKENS (line 83)
+   * 3. BASE (line 188)
+   * 4. PAGE TRANSITION (line 211)
+   * 5. DROP ZONE (line 234)
    *    Includes: veil transition layers, wordmark, tagline,
    *    browse button, focus styles, high contrast
-   * 6. TOOLBAR (line 569)
+   * 6. TOOLBAR (line 586)
    *    Floating pill, navigation, zoom, dark mode toggle, filename
-   * 7. READER LAYOUT (line 791)
-   * 8. VIEWPORT (line 801)
-   * 9. PAGE CONTAINER (line 839)
-   * 10. DARK MODE FILTER (line 877)
-   * 11. TEXT LAYER (line 895)
+   * 7. READER LAYOUT (line 808)
+   * 8. VIEWPORT (line 818)
+   * 9. PAGE CONTAINER (line 856)
+   * 10. DARK MODE FILTER (line 894)
+   * 11. TEXT LAYER (line 912)
    *     Selection, multi-column flex wrapper, OCR image regions,
    *     vertical OCR layer
-   * 12. LINK ANNOTATIONS (line 1004)
-   * 13. PAGE NUMBER LABEL (line 1026)
-   * 14. ERROR BANNER (line 1033)
-   * 15. EXPORT PROGRESS (line 1095)
-   * 16. OCR LOADING INDICATOR (line 1155)
-   * 17. ACCESSIBILITY (line 1254)
+   * 12. LINK ANNOTATIONS (line 1021)
+   * 13. PAGE NUMBER LABEL (line 1043)
+   * 14. ERROR BANNER (line 1050)
+   * 15. EXPORT PROGRESS (line 1112)
+   * 16. OCR LOADING INDICATOR (line 1172)
+   * 17. ACCESSIBILITY (line 1271)
    *     prefers-reduced-motion, prefers-contrast, focus-visible
-   * 18. UTILITIES (line 1290)
-   * 19. MOBILE LANDSCAPE (line 1311)
-   * 20. APP SHELL LOADER (line 1342)
+   * 18. UTILITIES (line 1307)
+   * 19. MOBILE LANDSCAPE (line 1328)
+   * 20. APP SHELL LOADER (line 1359)
 */
 
 
@@ -77,18 +83,13 @@
 /* --- DESIGN TOKENS --- */
 
 :root {
-  /* Warm dark palette (from landing page design system) */
+  /* Warm dark palette (reading chrome) */
   --bg-deep: #0a0806;          /* App background, very dark warm */
-  --bg-surface: #1a1510;       /* Cards, elevated surfaces */
-  --bg-elevated: #241e18;      /* Hover states, toolbar */
   --text-primary: #f5efe2;     /* Cream, not pure white */
   --text-secondary: #9a8878;   /* Warm grey */
-  --text-muted: #6b5d50;       /* Very subtle */
   --border: rgba(212, 163, 115, 0.08);
   --accent: #D4A373;           /* Amber */
   --accent-hover: #deb48a;
-  --accent-active: #ba8d5e;
-  --accent-ghost: rgba(212, 163, 115, 0.04);
   --accent-subtle: rgba(212, 163, 115, 0.08);
   --accent-border: rgba(212, 163, 115, 0.1);
   --accent-highlight: rgba(212, 163, 115, 0.14);
@@ -97,11 +98,24 @@
   --selection: rgba(107, 138, 205, 0.3);
   --page-canvas-bg: #1e1e1e;
   --error-text: #e8a0a0;
-  --veil-layer-mid: #110e0b;
-  --drag-over-bg: #161210;
-  --text-on-accent: #2a1f1a;
   --shadow-page: 0 2px 16px rgba(0, 0, 0, 0.3);
   --shadow-overlay: 0 4px 24px rgba(0, 0, 0, 0.5);
+
+  /* Drop screen palette */
+  --drop-bg: #191919;
+  --drop-bg-drag: #202020;
+  --drop-layer-mid: #101010;
+  --drop-layer-deep: #141210;
+  --drop-card-bg: #1C1C1C;
+  --drop-text-primary: #E6E4E2;
+  --drop-text-secondary: #9c9895;
+  --drop-text-on-accent: #191919;
+  --drop-accent: #D4A373;
+  --drop-accent-hover: #deb48a;
+  --drop-accent-active: #ba8d5e;
+  --drop-accent-focus: rgba(212, 163, 115, 0.6);
+  --drop-border-interactive: rgba(255, 255, 255, 0.2);
+  --drop-border-interactive-hover: rgba(255, 255, 255, 0.35);
   --radius-pill: 50px;
   --radius-lg: 16px;
   --radius-md: 12px;
@@ -200,7 +214,7 @@ body {
   position: fixed;
   inset: 0;
   z-index: var(--z-transition);
-  background: var(--bg-elevated);
+  background: var(--drop-bg);
   pointer-events: none;
   opacity: 0;
   transition: opacity 0.5s ease;
@@ -245,7 +259,7 @@ body {
  * exist on mobile
  */
 #drop-zone.drag-over .veil-layer-1 {
-  background: var(--drag-over-bg);
+  background: var(--drop-bg-drag);
 }
 
 #drop-zone::after {
@@ -256,7 +270,7 @@ body {
     content: '';
     position: absolute;
     inset: 64px 48px 48px;
-    border: 1.5px dashed rgba(212, 163, 115, 0.25);
+    border: 1.5px dashed rgba(255, 255, 255, 0.25);
     border-radius: var(--radius-lg);
     pointer-events: none;
     z-index: 4;
@@ -265,7 +279,9 @@ body {
 }
 
 #drop-zone.drag-over::after {
-  border-color: rgba(212, 163, 115, 0.4);
+  /* Stronger than the static interactive borders: transient feedback
+     during a drag has to pop, it disappears as soon as the user drops */
+  border-color: rgba(255, 255, 255, 0.45);
 }
 
 
@@ -273,8 +289,9 @@ body {
 
 /*
  * Three panels that slide right when a PDF loads, creating a
- * parallax curtain-opening effect. Each layer is a different shade
- * of the warm palette, moving at a different speed. The reader is
+ * parallax curtain-opening effect. The first two layers are neutral
+ * greys from the drop palette, the third carries a hint of warmth
+ * to bridge into the reader background (#0a0806). The reader is
  * already rendering behind them so the transition masks load time
  */
 
@@ -287,19 +304,19 @@ body {
 }
 
 .veil-layer-1 {
-  background: var(--bg-elevated);
+  background: var(--drop-bg);
   z-index: 3;
   transition: background 0.3s ease, transform 0.7s var(--ease-smooth);
 }
 
 .veil-layer-2 {
-  background: var(--veil-layer-mid);
+  background: var(--drop-layer-mid);
   z-index: 2;
   transition: transform 0.85s var(--ease-smooth);
 }
 
 .veil-layer-3 {
-  background: var(--bg-surface);
+  background: var(--drop-layer-deep);
   z-index: 1;
   transition: transform 1s var(--ease-smooth);
 }
@@ -365,7 +382,7 @@ body {
   font-weight: var(--font-bold);
   letter-spacing: var(--tracking-tight);
   line-height: 1;
-  color: var(--accent);
+  color: var(--drop-accent);
   transition: opacity 0.4s ease;
 }
 @media (min-width: 700px) {
@@ -376,7 +393,7 @@ body {
 
 .drop-tagline {
   font-size: var(--text-base);
-  color: var(--text-secondary);
+  color: var(--drop-text-secondary);
   letter-spacing: var(--tracking-tight);
   margin-top: var(--space-2);
 }
@@ -401,15 +418,15 @@ body {
   font-size: var(--text-md);
   font-weight: var(--font-semibold);
   border: none;
-  background: var(--accent);
-  color: var(--text-on-accent);
+  background: var(--drop-accent);
+  color: var(--drop-text-on-accent);
   cursor: pointer;
   transition: background 0.2s, transform 0.15s;
   margin-top: var(--space-9);
 }
-.drop-browse-btn:hover { background: var(--accent-hover); }
+.drop-browse-btn:hover { background: var(--drop-accent-hover); }
 .drop-browse-btn:active {
-  background: var(--accent-active);
+  background: var(--drop-accent-active);
   transform: scale(0.97);
 }
 /* Hide on mouse devices, "click anywhere" replaces the button */
@@ -421,8 +438,8 @@ body {
   margin-top: 56px;
   padding: var(--space-4) var(--space-5);
   border-radius: var(--radius-md);
-  border: 1px solid var(--accent-border);
-  background: var(--accent-ghost);
+  border: 1px solid var(--drop-border-interactive);
+  background: var(--drop-card-bg);
   cursor: pointer;
   text-align: center;
   transition: background 0.2s, border-color 0.2s, transform 0.15s;
@@ -444,53 +461,53 @@ body {
 }
 @media (hover: hover) {
   .drop-resume-section:hover {
-    background: var(--accent-subtle);
-    border-color: var(--accent-border-mid);
+    background: rgba(255, 255, 255, 0.04);
+    border-color: var(--drop-border-interactive-hover);
   }
 }
 .drop-resume-section:active {
-  background: var(--accent-border);
-  border-color: var(--accent-border-mid);
+  background: rgba(255, 255, 255, 0.08);
+  border-color: var(--drop-border-interactive-hover);
   transform: scale(0.98);
 }
 .drop-resume-label {
   font-size: var(--text-base);
-  color: var(--text-secondary);
+  color: var(--drop-text-secondary);
   margin-bottom: var(--space-2);
 }
 .drop-resume-filename {
   font-size: var(--text-lg);
   font-weight: var(--font-semibold);
-  color: var(--text-primary);
+  color: var(--drop-text-primary);
   word-break: break-word;
   line-height: var(--leading-snug);
 }
 .drop-resume-page {
   font-size: var(--text-xs);
-  color: var(--text-secondary);
+  color: var(--drop-text-secondary);
   margin-top: var(--space-2);
 }
 .drop-alt-action {
   margin-top: var(--space-4);
   font-size: var(--text-base);
-  color: var(--text-secondary);
+  color: var(--drop-text-secondary);
   cursor: pointer;
   padding: var(--space-3) var(--space-6);
   border-radius: var(--radius-md);
-  border: 1px solid var(--accent-border);
-  background: var(--accent-ghost);
+  border: 1px solid var(--drop-border-interactive);
+  background: transparent;
   transition: background 0.2s, border-color 0.2s;
   -webkit-tap-highlight-color: transparent;
 }
 .drop-alt-action:active {
-  background: var(--accent-border);
-  border-color: var(--accent-border-mid);
+  background: rgba(255, 255, 255, 0.08);
+  border-color: var(--drop-border-interactive-hover);
   transform: scale(0.98);
 }
 @media (hover: hover) {
   .drop-alt-action:hover {
-    background: var(--accent-subtle);
-    border-color: var(--accent-border-mid);
+    background: rgba(255, 255, 255, 0.04);
+    border-color: var(--drop-border-interactive-hover);
   }
 }
 @media (min-width: 700px) {
@@ -508,14 +525,14 @@ body {
   top: 16px;
   left: 20px;
   font-size: var(--text-base);
-  color: var(--text-secondary);
+  color: var(--drop-text-secondary);
   text-decoration: none;
   transition: color var(--transition);
   z-index: var(--z-drop-about);
   padding: var(--space-2) var(--space-1);
 }
 .drop-about:hover {
-  color: var(--accent);
+  color: var(--drop-accent);
 }
 @media (min-width: 700px) {
   .drop-about { left: 48px; }
@@ -528,23 +545,23 @@ body {
   outline: none;
 }
 #drop-zone:focus-visible::after {
-  border-color: var(--accent-focus) !important;
+  border-color: var(--drop-accent-focus) !important;
   content: '' !important;
   position: absolute !important;
   inset: 64px 48px 48px !important;
-  border: 1.5px dashed rgba(212, 163, 115, 0.5) !important;
+  border: 1.5px dashed var(--drop-accent-focus) !important;
   border-radius: var(--radius-lg) !important;
   pointer-events: none !important;
   z-index: 4 !important;
 }
 .drop-about:focus-visible {
-  outline: 2px solid var(--accent-focus);
+  outline: 2px solid var(--drop-accent-focus);
   outline-offset: 3px;
   border-radius: var(--radius-sm);
 }
 .drop-browse-btn:focus-visible,
 .drop-resume-section:focus-visible {
-  outline: 2px solid var(--accent-focus);
+  outline: 2px solid var(--drop-accent-focus);
   outline-offset: 3px;
 }
 
@@ -552,16 +569,16 @@ body {
 /* --- DROP ZONE HIGH CONTRAST --- */
 
 @media (prefers-contrast: more) {
-  .drop-tagline { color: var(--text-primary); }
-  .drop-resume-label { color: var(--text-primary); }
-  .drop-resume-page { color: var(--text-secondary); }
-  .drop-alt-action { color: var(--text-secondary); }
-  .drop-about { color: var(--text-primary); }
+  .drop-tagline { color: var(--drop-text-primary); }
+  .drop-resume-label { color: var(--drop-text-primary); }
+  .drop-resume-page { color: var(--drop-text-secondary); }
+  .drop-alt-action { color: var(--drop-text-secondary); }
+  .drop-about { color: var(--drop-text-primary); }
   .drop-resume-section {
-    border-color: rgba(212, 163, 115, 0.3);
+    border-color: rgba(255, 255, 255, 0.5);
   }
   #drop-zone::after {
-    border-color: var(--accent-focus) !important;
+    border-color: var(--drop-accent-focus) !important;
   }
 }
 
@@ -1352,7 +1369,7 @@ div.ocr-loading:not(.page-container)::before {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: var(--bg-deep);
+  background: var(--drop-bg);
   z-index: var(--z-loader);
 }
 
@@ -1361,7 +1378,7 @@ div.ocr-loading:not(.page-container)::before {
   font-size: 48px;
   font-weight: var(--font-bold);
   letter-spacing: var(--tracking-tight);
-  color: var(--accent);
+  color: var(--drop-accent);
   animation: loader-pulse 1.5s ease-in-out infinite;
 }
 

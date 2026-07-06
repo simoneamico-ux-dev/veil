@@ -205,12 +205,12 @@
 
     // Layer 1: Your PDF
     html += buildDocLayer(0, layerGap * 2 + 20, LW, LH, tiltX, spread,
-      "Your PDF", "#9a8878", "0 8px 24px rgba(0,0,0,0.15)",
+      "Your PDF", "#9c9895", "0 8px 24px rgba(0,0,0,0.15)",
       "#f5f0ea", "#3a3028", 0.25, 0.18, mob, false);
 
     // Layer 2: Smart Dark Mode
     html += buildDocLayer(1, layerGap + 10, LW, LH, tiltX, spread,
-      "Smart Dark Mode", "#7a6b5e", `0 12px 32px rgba(0,0,0,${0.2 + spread * 0.15})`,
+      "Smart Dark Mode", "#807c78", `0 12px 32px rgba(0,0,0,${0.2 + spread * 0.15})`,
       "#171717", "#cfcfcf", 0.35, 0.25, mob, true);
 
     // Layer 3: Protected Layer
