@@ -38,6 +38,12 @@
    *   Internal links are deferred until all pages exist in the new PDF,
    *   because page 1 might link to page 50 which hasn't been created yet.
    *
+   * - Document outline preservation: bookmarks are a separate navigation
+   *   tree from link annotations, so preserving one does not preserve the
+   *   other. I rebuild the outline after every output page exists, resolving
+   *   named and explicit internal destinations against the new page refs.
+   *   External actions are deliberately not copied.
+   *
    * - Memory management: each page's JPEG bytes are nulled after
    *   embedding, the outPdf reference is nulled after save(), and
    *   every 5 pages I pause for 100ms to let the browser's GC (garbage
@@ -65,13 +71,14 @@
    *
    * The file follows this flow:
    *
-   * 1. MODULE STATE (line 93)
-   * 2. INITIALIZATION AND PUBLIC API (line 143)
-   * 3. LAZY LOADERS (line 167)
-   * 4. PROGRESS UI (line 268)
-   * 5. LINK ANNOTATIONS (line 283)
-   * 6. PER-PAGE EXPORT (line 407)
-   * 7. MAIN EXPORT ORCHESTRATOR (line 713)
+   * 1. MODULE STATE (line 101)
+   * 2. INITIALIZATION AND PUBLIC API (line 150)
+   * 3. LAZY LOADERS (line 174)
+   * 4. PROGRESS UI (line 275)
+   * 5. LINK ANNOTATIONS (line 290)
+   * 6. DOCUMENT OUTLINE (line 433)
+   * 7. PER-PAGE EXPORT (line 525)
+   * 8. MAIN EXPORT ORCHESTRATOR (line 831)
 */
 
 import {
@@ -85,6 +92,7 @@ import {
   isBlankPaper,
   OCR_OVERLAY_COVERAGE_THRESHOLD,
   OCR_OVERLAY_CHAR_THRESHOLD,
+  transformPdfDestination,
 } from './core.js';
 
 import { preprocessCanvasForOcr } from './ocr.js';
@@ -135,7 +143,6 @@ const SCRIPT_FONT_MAP = {
 };
 
 const fontBytesCache = {};   // { arabic: Uint8Array, ... } persists across exports
-const fontRegistry = {};     // { arabic: PDFFont, ... } reset per export (tied to outPdf)
 
 let ctx = null;
 
@@ -231,7 +238,7 @@ const NO_SHAPING_FEATURES = {
   liga: false, rlig: false, clig: false, calt: false, ccmp: false,
 };
 
-async function getFontForScript(script, outPdf, latinFont) {
+async function getFontForScript(script, outPdf, latinFont, fontRegistry) {
   if (script === 'latin' || !SCRIPT_FONT_MAP[script]) return latinFont;
   if (fontRegistry[script]) return fontRegistry[script];
 
@@ -283,6 +290,71 @@ export function hideExportProgress() {
 // --- LINK ANNOTATIONS ---
 
 /*
+ * PDF.js exposes internal destinations in two shapes: a named destination
+ * or an explicit array whose first value is a source page ref or page index.
+ * I resolve both shapes here so link annotations and document outlines
+ * cannot drift into subtly different low-level PDF representations.
+ */
+async function buildInternalDestination(outPdf, dest, destinationViewports) {
+  const { PDFName } = pdfLibModule;
+  let explicitDest = null;
+
+  try {
+    if (typeof dest === 'string') {
+      explicitDest = await ctx.pdfDoc.getDestination(dest);
+    } else if (Array.isArray(dest) && dest.length > 0) {
+      explicitDest = dest;
+    }
+  } catch (e) {
+    console.warn('[Export] Failed to resolve internal destination:', e);
+    return null;
+  }
+
+  if (!Array.isArray(explicitDest) || explicitDest.length === 0) {
+    return null;
+  }
+
+  try {
+    const target = explicitDest[0];
+    const pageIndex = Number.isInteger(target)
+      ? target
+      : await ctx.pdfDoc.getPageIndex(target);
+    if (pageIndex < 0 || pageIndex >= outPdf.getPageCount()) return null;
+
+    let viewport = destinationViewports.get(pageIndex);
+    if (!viewport) {
+      const targetPage = await ctx.pdfDoc.getPage(pageIndex + 1);
+      viewport = targetPage.getViewport({ scale: 1 });
+      destinationViewports.set(pageIndex, viewport);
+    }
+
+    const context = outPdf.context;
+    const destValues = [outPdf.getPage(pageIndex).ref];
+    const transformedValues = transformPdfDestination(explicitDest, viewport);
+
+    for (const value of transformedValues) {
+      if (value === null || value === undefined) {
+        destValues.push(context.obj(null));
+      } else if (typeof value === 'object' && value.name) {
+        destValues.push(PDFName.of(value.name));
+      } else if (typeof value === 'string') {
+        const name = value.startsWith('/') ? value.slice(1) : value;
+        destValues.push(PDFName.of(name));
+      } else if (typeof value === 'number') {
+        destValues.push(context.obj(value));
+      } else {
+        destValues.push(context.obj(null));
+      }
+    }
+
+    return context.obj(destValues);
+  } catch (e) {
+    console.warn('[Export] Failed to build internal destination:', e);
+    return null;
+  }
+}
+
+/*
  * Re-embeds link annotations from the original PDF into the exported one.
  * External links (URLs) get an action dictionary with the sanitized URI.
  * Internal links (page navigation) need special handling: the destination
@@ -296,7 +368,7 @@ export function hideExportProgress() {
  * like /Link and /URI, PDFString for text values, and context.obj()
  * to create dictionaries that get written directly into the PDF file
  */
-async function embedLinkAnnotations(outPdf, outPage, annotations) {
+async function embedLinkAnnotations(outPdf, outPage, annotations, destinationViewports) {
   const { PDFName, PDFString } = pdfLibModule;
 
   for (const annot of annotations) {
@@ -336,55 +408,9 @@ async function embedLinkAnnotations(outPdf, outPage, annotations) {
         });
         annotDict.set(PDFName.of('A'), context.register(actionDict));
       } else if (dest) {
-        let explicitDest = null;
-
-        try {
-          if (typeof dest === 'string') {
-            explicitDest = await ctx.pdfDoc.getDestination(dest);
-          } else if (Array.isArray(dest) && dest.length > 0) {
-            explicitDest = dest;
-          }
-        } catch (e) {
-          console.warn('[LinkExport] Failed to resolve dest:', dest, e);
-          continue;
-        }
-
-        if (!explicitDest || !Array.isArray(explicitDest) || explicitDest.length === 0) {
-          continue;
-        }
-
-        try {
-          const pageIndex = await ctx.pdfDoc.getPageIndex(explicitDest[0]);
-
-          if (pageIndex >= outPdf.getPageCount()) continue;
-
-          const targetPageRef = outPdf.getPage(pageIndex).ref;
-
-          const destValues = [targetPageRef];
-
-          for (let d = 1; d < explicitDest.length; d++) {
-            const v = explicitDest[d];
-
-            if (v === null || v === undefined) {
-              destValues.push(context.obj(null));
-            } else if (typeof v === 'object' && v.name) {
-              destValues.push(PDFName.of(v.name));
-            } else if (typeof v === 'string') {
-              const name = v.startsWith('/') ? v.slice(1) : v;
-              destValues.push(PDFName.of(name));
-            } else if (typeof v === 'number') {
-              destValues.push(context.obj(v));
-            } else {
-              destValues.push(context.obj(null));
-            }
-          }
-
-          const destArray = context.obj(destValues);
-          annotDict.set(PDFName.of('Dest'), destArray);
-        } catch (e) {
-          console.warn('[LinkExport] Failed to build dest array:', e);
-          continue;
-        }
+        const destArray = await buildInternalDestination(outPdf, dest, destinationViewports);
+        if (!destArray) continue;
+        annotDict.set(PDFName.of('Dest'), destArray);
       }
 
       const annotRef = context.register(annotDict);
@@ -400,6 +426,98 @@ async function embedLinkAnnotations(outPdf, outPage, annotations) {
     } catch (e) {
       console.warn('[LinkExport] Annotation failed:', e);
     }
+  }
+}
+
+
+// --- DOCUMENT OUTLINE ---
+
+/*
+ * pdf-lib has no high-level outline API, and creating a new PDF does not
+ * carry the source catalog across. I rebuild the linked outline tree with
+ * indirect refs so readers can traverse Parent, First, Last, Prev, and Next
+ * exactly as they would in the original document.
+ *
+ * Only internal Dest values are copied. URL, JavaScript, file-launch, and
+ * other actions stay inert, which preserves their place in the hierarchy
+ * without expanding the export's trust boundary.
+ */
+async function embedDocumentOutline(outPdf, destinationViewports) {
+  let outline;
+
+  try {
+    outline = await ctx.pdfDoc.getOutline();
+  } catch (e) {
+    console.warn('[OutlineExport] Failed to read document outline:', e);
+    return;
+  }
+
+  if (!Array.isArray(outline) || outline.length === 0) return;
+
+  const { PDFHexString, PDFName, PDFNumber } = pdfLibModule;
+  const context = outPdf.context;
+  const outlinesDict = context.obj({ Type: 'Outlines' });
+  const outlinesRef = context.register(outlinesDict);
+
+  async function addLevel(items, parentRef) {
+    const entries = items
+      .filter(item => item && typeof item === 'object')
+      .map(item => {
+        const dict = context.obj({
+          Title: PDFHexString.fromText(String(item.title ?? '')),
+          Parent: parentRef,
+        });
+        return { item, dict, ref: context.register(dict) };
+      });
+
+    if (entries.length === 0) return null;
+
+    let visibleCount = entries.length;
+
+    for (let index = 0; index < entries.length; index++) {
+      const entry = entries[index];
+
+      if (index > 0) {
+        entry.dict.set(PDFName.of('Prev'), entries[index - 1].ref);
+      }
+      if (index < entries.length - 1) {
+        entry.dict.set(PDFName.of('Next'), entries[index + 1].ref);
+      }
+
+      const destArray = await buildInternalDestination(outPdf, entry.item.dest, destinationViewports);
+      if (destArray) entry.dict.set(PDFName.of('Dest'), destArray);
+
+      const childItems = Array.isArray(entry.item.items) ? entry.item.items : [];
+      const children = await addLevel(childItems, entry.ref);
+      if (!children) continue;
+
+      entry.dict.set(PDFName.of('First'), children.first);
+      entry.dict.set(PDFName.of('Last'), children.last);
+
+      const isClosed = Number.isInteger(entry.item.count) && entry.item.count < 0;
+      const itemCount = isClosed ? -children.visibleCount : children.visibleCount;
+      entry.dict.set(PDFName.of('Count'), PDFNumber.of(itemCount));
+
+      if (!isClosed) visibleCount += children.visibleCount;
+    }
+
+    return {
+      first: entries[0].ref,
+      last: entries[entries.length - 1].ref,
+      visibleCount,
+    };
+  }
+
+  try {
+    const root = await addLevel(outline, outlinesRef);
+    if (!root) return;
+
+    outlinesDict.set(PDFName.of('First'), root.first);
+    outlinesDict.set(PDFName.of('Last'), root.last);
+    outlinesDict.set(PDFName.of('Count'), PDFNumber.of(root.visibleCount));
+    outPdf.catalog.set(PDFName.of('Outlines'), outlinesRef);
+  } catch (e) {
+    console.warn('[OutlineExport] Failed to build document outline:', e);
   }
 }
 
@@ -421,7 +539,7 @@ async function embedLinkAnnotations(outPdf, outPage, annotations) {
  * Tesseract worker (separate from the viewer's worker). The recognized
  * text is embedded as invisible text positioned over each word
  */
-async function exportPage(pageNum, outPdf, font, exportWorker, exportScale, renderCanvas, finalCanvas, deferredAnnotations, myExportGen, totalPages) {
+async function exportPage(pageNum, outPdf, font, fontRegistry, exportWorker, exportScale, renderCanvas, finalCanvas, deferredAnnotations, myExportGen, totalPages) {
   const page = await ctx.pdfDoc.getPage(pageNum);
   const origVp = page.getViewport({ scale: 1 });
   const renderVp = page.getViewport({ scale: exportScale });
@@ -609,7 +727,7 @@ async function exportPage(pageNum, outPdf, font, exportWorker, exportScale, rend
       // Write each run as a single drawText
       for (const run of runs) {
         const runText = run.items.map(it => it.str).join(' ');
-        const runFont = await getFontForScript(run.script, outPdf, font);
+        const runFont = await getFontForScript(run.script, outPdf, font, fontRegistry);
         const avgFontSize = run.items.reduce((s, it) => s + it.fontSize, 0) / run.items.length;
         const minX = Math.min(...run.items.map(it => it.left));
         const maxX = Math.max(...run.items.map(it => it.left + (it.width || 0)));
@@ -657,7 +775,7 @@ async function exportPage(pageNum, outPdf, font, exportWorker, exportScale, rend
         if (baseFontSize < 1) continue;
 
         const script = detectScript(wordText);
-        const wordFont = await getFontForScript(script, outPdf, font);
+        const wordFont = await getFontForScript(script, outPdf, font, fontRegistry);
 
         try {
           const targetWidth = (word.bbox.x1 - word.bbox.x0) * sx;
@@ -714,8 +832,8 @@ async function exportPage(pageNum, outPdf, font, exportWorker, exportScale, rend
 
 /*
  * The entry point for export. Creates a new PDF, processes every page
- * sequentially (parallel would spike memory), embeds all deferred link
- * annotations at the end, and triggers the download.
+ * sequentially (parallel would spike memory), embeds deferred navigation
+ * structures at the end, and triggers the download.
  *
  * For scanned documents, a dedicated Tesseract worker is created for
  * the export (separate from the viewer's worker) so the viewer's OCR
@@ -733,6 +851,7 @@ export async function exportDarkPdf() {
     const { PDFDocument, StandardFonts } = await ensurePdfLib();
 
     let outPdf = await PDFDocument.create();
+    const fontRegistry = {};
 
     // Try Noto Sans (Unicode coverage) first, fall back to Helvetica
     // (256 chars only). The fallback is silent because the text is
@@ -762,6 +881,7 @@ export async function exportDarkPdf() {
 
     showExportProgress(0, totalPages);
     const deferredAnnotations = [];
+    const destinationViewports = new Map();
 
     let exportWorker = null;
     if (ctx.isScannedDocument) {
@@ -781,7 +901,7 @@ export async function exportDarkPdf() {
 
     for (let pageNum = 1; pageNum <= totalPages; pageNum++) {
       if (exportGeneration !== myExportGen) break;
-      await exportPage(pageNum, outPdf, font, exportWorker, exportScale, renderCanvas, finalCanvas, deferredAnnotations, myExportGen, totalPages);
+      await exportPage(pageNum, outPdf, font, fontRegistry, exportWorker, exportScale, renderCanvas, finalCanvas, deferredAnnotations, myExportGen, totalPages);
     }
 
     renderCanvas.width = 0;
@@ -797,13 +917,23 @@ export async function exportDarkPdf() {
     }
 
     for (const { outPage, annotations } of deferredAnnotations) {
-      await embedLinkAnnotations(outPdf, outPage, annotations);
+      if (exportGeneration !== myExportGen) return;
+      await embedLinkAnnotations(outPdf, outPage, annotations, destinationViewports);
     }
     deferredAnnotations.length = 0; // release refs before the heavy save() call
+    if (exportGeneration !== myExportGen) return;
+
+    await embedDocumentOutline(outPdf, destinationViewports);
+    if (exportGeneration !== myExportGen) return;
 
     outPdf.setProducer('veil (https://veil.simoneamico.com)');
     outPdf.setCreator('veil');
     let pdfBytes = await outPdf.save();
+    if (exportGeneration !== myExportGen) {
+      pdfBytes = null;
+      outPdf = null;
+      return;
+    }
     hideExportProgress();
 
     // Reset per-export font registry. The PDFFont objects are tied to
@@ -838,11 +968,15 @@ export async function exportDarkPdf() {
     ctx.announce('Export complete');
 
   } catch (err) {
-    console.error('Export failed:', err);
-    hideExportProgress();
-    if (exportGeneration === myExportGen) ctx.showError('Export failed. Please try again.');
+    if (exportGeneration === myExportGen) {
+      console.error('Export failed:', err);
+      hideExportProgress();
+      ctx.showError('Export failed. Please try again.');
+    }
   } finally {
-    exporting = false;
-    ctx.btnExport.disabled = false;
+    if (exportGeneration === myExportGen) {
+      exporting = false;
+      ctx.btnExport.disabled = false;
+    }
   }
 }

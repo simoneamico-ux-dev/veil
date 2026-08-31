@@ -7,14 +7,16 @@
  *   test-native-simple.pdf   — text at known positions + embedded image
  *   test-native-styles.pdf   — bold/italic transitions (Antigravity test)
  *   test-scanned.pdf         — full-page image simulating a scan
+ *   test-outline.pdf         : multi-level outline with internal destinations
  *
- * Each PDF has a companion .expected.json with exact text and positions.
+ * Expected values live in companion JSON files or focused E2E assertions.
  */
 
 import { writeFileSync } from 'fs';
 import { dirname, join } from 'path';
 import { fileURLToPath } from 'url';
 import {
+  degrees,
   PDFDocument,
   StandardFonts,
   rgb,
@@ -704,7 +706,161 @@ async function generateLinks() {
   console.log('Generated test-links.pdf');
 }
 
+// ============================================================
+// 9. test-outline.pdf
+//
+// Three pages with an eight-item outline and one internal link annotation.
+// The navigation mixes named and explicit destinations, three hierarchy
+// levels, Unicode titles, and the modes that exposed earlier link bugs.
+// ============================================================
+
+async function generateOutline() {
+  const { PDFHexString, PDFName, PDFNumber, PDFString } = await import('pdf-lib');
+
+  const pdf = await PDFDocument.create({ updateMetadata: false });
+  const font = await pdf.embedFont(StandardFonts.Helvetica);
+  const pages = ['Overview', 'Part I', 'Appendix'].map((title, index) => {
+    const page = pdf.addPage([612, 792]);
+    page.drawText(title, {
+      x: 72,
+      y: 700,
+      size: 24,
+      font,
+      color: rgb(0, 0, 0),
+    });
+    page.drawText(`Synthetic outline fixture, page ${index + 1}`, {
+      x: 72,
+      y: 660,
+      size: 12,
+      font,
+      color: rgb(0, 0, 0),
+    });
+    return page;
+  });
+  pages[1].setRotation(degrees(90));
+  pages[2].setCropBox(36, 72, 540, 648);
+
+  const context = pdf.context;
+  const namedDestinations = context.obj({
+    PartOne: [pages[1].ref, 'Fit'],
+  });
+  pdf.catalog.set(PDFName.of('Dests'), namedDestinations);
+
+  const internalLink = context.obj({
+    Type: 'Annot',
+    Subtype: 'Link',
+    Rect: [72, 696, 180, 728],
+    Border: [0, 0, 0],
+    Dest: PDFName.of('PartOne'),
+  });
+  pages[0].node.set(PDFName.of('Annots'), context.obj([context.register(internalLink)]));
+
+  const externalActionRef = context.register(context.obj({
+    Type: 'Action',
+    S: 'URI',
+    URI: PDFString.of('https://example.com/reference'),
+  }));
+
+  const outline = [
+    {
+      title: 'Overview',
+      dest: context.obj([pages[0].ref, 'XYZ', 0, 792, null]),
+      items: [],
+    },
+    {
+      title: 'Part I – Café',
+      dest: PDFName.of('PartOne'),
+      closed: true,
+      items: [
+        {
+          title: 'Chapter 1',
+          dest: context.obj([pages[1].ref, 'FitH', 720]),
+          items: [
+            {
+              title: 'Section 1.1 – 東京',
+              dest: context.obj([pages[2].ref, 'XYZ', 72, 700, null]),
+              items: [],
+            },
+          ],
+        },
+      ],
+    },
+    {
+      title: 'Appendix',
+      dest: context.obj([pages[2].ref, 'Fit']),
+      items: [],
+    },
+    {
+      title: 'Bounding-box destination',
+      dest: context.obj([pages[2].ref, 'FitB']),
+      items: [],
+    },
+    {
+      title: 'Page index destination',
+      dest: context.obj([0, 'Fit']),
+      items: [],
+    },
+    {
+      title: 'External reference',
+      action: externalActionRef,
+      items: [],
+    },
+  ];
+
+  const outlinesDict = context.obj({ Type: 'Outlines' });
+  const outlinesRef = context.register(outlinesDict);
+
+  function addLevel(items, parentRef) {
+    const entries = items.map(item => {
+      const dict = context.obj({
+        Title: PDFHexString.fromText(item.title),
+        Parent: parentRef,
+      });
+      if (item.dest) dict.set(PDFName.of('Dest'), item.dest);
+      if (item.action) dict.set(PDFName.of('A'), item.action);
+      return { item, dict, ref: context.register(dict) };
+    });
+    let visibleCount = entries.length;
+
+    for (let index = 0; index < entries.length; index++) {
+      const entry = entries[index];
+      if (index > 0) entry.dict.set(PDFName.of('Prev'), entries[index - 1].ref);
+      if (index < entries.length - 1) entry.dict.set(PDFName.of('Next'), entries[index + 1].ref);
+
+      if (entry.item.items.length > 0) {
+        const children = addLevel(entry.item.items, entry.ref);
+        entry.dict.set(PDFName.of('First'), children.first);
+        entry.dict.set(PDFName.of('Last'), children.last);
+        const childCount = entry.item.closed ? -children.visibleCount : children.visibleCount;
+        entry.dict.set(PDFName.of('Count'), PDFNumber.of(childCount));
+        if (!entry.item.closed) visibleCount += children.visibleCount;
+      }
+    }
+
+    return {
+      first: entries[0].ref,
+      last: entries[entries.length - 1].ref,
+      visibleCount,
+    };
+  }
+
+  const root = addLevel(outline, outlinesRef);
+  outlinesDict.set(PDFName.of('First'), root.first);
+  outlinesDict.set(PDFName.of('Last'), root.last);
+  outlinesDict.set(PDFName.of('Count'), PDFNumber.of(root.visibleCount));
+  pdf.catalog.set(PDFName.of('Outlines'), outlinesRef);
+
+  const pdfBytes = await pdf.save();
+  writeFileSync(join(__dirname, 'test-outline.pdf'), pdfBytes);
+  console.log('Generated test-outline.pdf');
+}
+
 async function main() {
+  if (process.argv[2] === 'outline') {
+    await generateOutline();
+    return;
+  }
+
   await generateNativeSimple();
   await generateNativeStyles();
   await generateScanned();
@@ -713,6 +869,7 @@ async function main() {
   await generatePunctuation();
   await generateMixedSizes();
   await generateLinks();
+  await generateOutline();
   console.log('\nAll fixtures generated in', __dirname);
 }
 

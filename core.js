@@ -32,71 +32,71 @@
    *    Think of it as GPS coordinates for every object on the page.
    *    Complication: PDF coordinates start at the bottom-left with Y
    *    pointing up, but canvas/CSS start at the top-left with Y pointing
-   *    down. These functions handle the conversion.
+   *    down. These functions handle that conversion and exported destinations.
    *
-   * 4. IMAGE REGION EXTRACTION (line 254)
+   * 4. IMAGE REGION EXTRACTION (line 359)
    *    A PDF page is a sequence of drawing instructions ("operators"):
    *    "draw text here", "place image there", "change the transform".
    *    I walk this sequence tracking position state to find every
    *    raster image. This is how veil knows which areas to protect
    *    from dark mode inversion.
    *
-   * 5. OVERLAY COMPOSITION (line 323)
+   * 5. OVERLAY COMPOSITION (line 428)
    *    The dark mode trick: CSS `filter: invert()` on the main canvas
    *    inverts everything (text becomes light, but images become
    *    wrong too). The overlay canvas sits on top with NO filter, and
    *    I copy the original image pixels there. Result: dark text with
    *    original-color images.
    *
-   * 6. ALREADY-DARK DETECTION (line 346)
+   * 6. ALREADY-DARK DETECTION (line 451)
    *    Samples luminance at page edges and corners to detect pages
    *    that are already dark (slides, dark-themed PDFs). These pages
    *    skip inversion because inverting an already-dark page makes it light.
    *
-   * 7. DARK MODE STATE RESOLUTION (line 396)
+   * 7. DARK MODE STATE RESOLUTION (line 501)
    *    Decides whether to apply dark mode on a given page. Three states:
    *    auto (respects detection), force dark, force light. The user can
    *    override any page with the toggle button, and the override is
    *    preserved in the exported PDF.
    *
-   * 8. TEXT NORMALIZATION (line 413)
+   * 8. TEXT NORMALIZATION (line 518)
    *    Decomposes typographic ligatures (ﬁ->fi, ﬂ->fl) so copy/paste
    *    produces normal characters instead of special Unicode glyphs.
    *
-   * 9. PUNCTUATION MERGING (line 433)
+   * 9. PUNCTUATION MERGING (line 538)
    *    Fuses tiny standalone punctuation items (3-4px wide periods,
    *    commas) into the preceding word so they're selectable.
    *
-   * 10. TEXT LAYER UTILITIES (line 493)
+   * 10. TEXT LAYER UTILITIES (line 598)
    *     Line grouping (which words belong on the same line?) and word
    *     boundary detection (should there be a space between two spans?).
    *     Used by both the native text layer and the OCR text layer.
    *
-   * 11. SCALE CALCULATION (line 580)
+   * 11. SCALE CALCULATION (line 685)
    *     Determines how large to render each page. Fit-to-page on desktop,
    *     fit-to-width on mobile landscape.
    *
-   * 12. NAVIGATOR LANGUAGE MAPPING (line 600)
+   * 12. NAVIGATOR LANGUAGE MAPPING (line 705)
    *     Maps the user's OS language to a Tesseract language code so the
    *     OCR worker starts with the right model from the beginning.
    *
-   * 13. SCANNED DOCUMENT DETECTION (line 649)
+   * 13. SCANNED DOCUMENT DETECTION (line 754)
    *     Samples multiple pages to determine if the PDF is a scan (one
    *     full-page image per page, almost no native text).
    *
-   * 14. OCR LANGUAGE DETECTION (line 678)
+   * 14. OCR LANGUAGE DETECTION (line 783)
    *     Detects the document language from character frequency and
    *     function words. Used as a fallback when navigator.languages
    *     doesn't provide a non-English language.
    *
-   * 15. SCRIPT DETECTION (line 827)
+   * 15. SCRIPT DETECTION (line 932)
    *     Identifies the writing system of a text string by scanning for
    *     Unicode range patterns. Used by the export pipeline to select
    *     the correct Noto Sans font variant for each text item, enabling
    *     proper rendering of Arabic, Hebrew, CJK, Indic and every other
    *     major writing system in exported PDFs.
    *
-   * 16. IMAGE CONTENT ANALYSIS (line 882)
+   * 16. IMAGE CONTENT ANALYSIS (line 987)
    *     Detects OCR overlays (Adobe Paper Capture scans with invisible
    *     text layer) using four independent signals: image coverage,
    *     text containment, character density, and blank paper analysis.
@@ -223,6 +223,111 @@ export function transformPoint(matrix, x, y) {
     matrix[0] * x + matrix[2] * y + matrix[4],
     matrix[1] * x + matrix[3] * y + matrix[5],
   ];
+}
+
+/*
+ * PDF.js right-angle viewport matrices can retain sine or cosine residue
+ * near zero. I use this tolerance both to identify the intended axis and
+ * to remove that residue from destination coordinates written to the PDF.
+ */
+const PDF_DESTINATION_EPSILON = 1e-10;
+
+function cleanPdfDestinationNumber(value) {
+  if (Math.abs(value) < PDF_DESTINATION_EPSILON) return 0;
+  return Math.round(value * 1e10) / 1e10;
+}
+
+function transformPdfDestinationAxis(firstCoefficient, firstValue, secondCoefficient, secondValue, offset) {
+  let result = offset;
+
+  if (Math.abs(firstCoefficient) >= PDF_DESTINATION_EPSILON) {
+    if (!Number.isFinite(firstValue)) return null;
+    result += firstCoefficient * firstValue;
+  }
+  if (Math.abs(secondCoefficient) >= PDF_DESTINATION_EPSILON) {
+    if (!Number.isFinite(secondValue)) return null;
+    result += secondCoefficient * secondValue;
+  }
+
+  return cleanPdfDestinationNumber(result);
+}
+
+function transformPdfDestinationPoint(viewport, x, y) {
+  const [a, b, c, d, e, f] = viewport.transform;
+  return [
+    cleanPdfDestinationNumber(a * x + c * y + e),
+    cleanPdfDestinationNumber(-b * x - d * y + viewport.height - f),
+  ];
+}
+
+/*
+ * The export flattens CropBox offsets and page rotation into each page image.
+ * I transform destination coordinates through that same viewport so bookmarks
+ * still land on the location the source PDF intended. Rotated axis-fit and
+ * content-bounding-box modes have no exact raster equivalent, so I fall back
+ * to a full-page fit instead of silently changing their zoom semantics.
+ */
+export function transformPdfDestination(explicitDest, viewport) {
+  const modeValue = explicitDest[1];
+  const mode = typeof modeValue === 'object' && modeValue?.name
+    ? modeValue.name
+    : typeof modeValue === 'string'
+      ? modeValue.replace(/^\//, '')
+      : null;
+  const values = explicitDest.slice(2);
+  const [a, b, c, d, e, f] = viewport.transform;
+  const outputTopOffset = viewport.height - f;
+
+  if (mode === 'XYZ') {
+    const left = Number.isFinite(values[0]) ? values[0] : null;
+    const top = Number.isFinite(values[1]) ? values[1] : null;
+    const zoom = Number.isFinite(values[2]) ? values[2] : null;
+    return [
+      mode,
+      transformPdfDestinationAxis(a, left, c, top, e),
+      transformPdfDestinationAxis(-b, left, -d, top, outputTopOffset),
+      zoom,
+    ];
+  }
+
+  if (mode === 'FitB') return ['Fit'];
+
+  if (mode === 'FitH' || mode === 'FitBH') {
+    const top = Number.isFinite(values[0]) ? values[0] : null;
+
+    if (Math.abs(b) < PDF_DESTINATION_EPSILON) {
+      return ['FitH', transformPdfDestinationAxis(0, null, -d, top, outputTopOffset)];
+    }
+    return ['Fit'];
+  }
+
+  if (mode === 'FitV' || mode === 'FitBV') {
+    const left = Number.isFinite(values[0]) ? values[0] : null;
+
+    if (Math.abs(c) < PDF_DESTINATION_EPSILON) {
+      return ['FitV', transformPdfDestinationAxis(a, left, 0, null, e)];
+    }
+    return ['Fit'];
+  }
+
+  if (mode === 'FitR') {
+    if (values.length < 4 || !values.slice(0, 4).every(Number.isFinite)) {
+      return ['Fit'];
+    }
+
+    const [left, bottom, right, top] = values;
+    const corners = [
+      transformPdfDestinationPoint(viewport, left, bottom),
+      transformPdfDestinationPoint(viewport, left, top),
+      transformPdfDestinationPoint(viewport, right, bottom),
+      transformPdfDestinationPoint(viewport, right, top),
+    ];
+    const xs = corners.map(point => point[0]);
+    const ys = corners.map(point => point[1]);
+    return [mode, Math.min(...xs), Math.min(...ys), Math.max(...xs), Math.max(...ys)];
+  }
+
+  return explicitDest.slice(1);
 }
 
 /*
@@ -916,4 +1021,3 @@ export function isBlankPaper(pixelData, width, height) {
   if (total === 0) return false;
   return (bright / total) >= IMAGE_BLANK_PAPER_THRESHOLD;
 }
-

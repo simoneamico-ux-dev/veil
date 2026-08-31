@@ -12,7 +12,7 @@ veil solves a specific problem: dark mode PDF readers typically invert everythin
 - Homepage: https://veil.simoneamico.com
 - Reader (drop zone): https://veil.simoneamico.com/reader
 - Built: vanilla JS, no framework, no build step, installable PWA
-- Tested: 467 tests (unit and Playwright E2E across macOS, Linux, Windows)
+- Tested: 485 tests (unit and Playwright E2E across macOS, Linux, Windows)
 - Privacy: 100% client-side, files never leave the device
 
 ## Differentiating features
@@ -23,7 +23,7 @@ veil solves a specific problem: dark mode PDF readers typically invert everythin
 - Scanned documents detected automatically, full-page OCR via Tesseract.js
 - Scans with embedded invisible OCR text layers (a format used by some scanning tools) detected and inverted correctly
 - Already-dark pages (slides, dark themes) detected via BT.601 luminance and left untouched
-- Export to PDF with dark mode baked in: selectable text, working links (internal and external), 22 writing systems supported
+- Export to PDF with dark mode baked in: selectable text, working links, nested document bookmarks, 22 writing systems supported
 - Zoom via PDF.js native re-rendering, sharp text at any zoom level
 - Installable PWA, works offline after first visit
 - Generation counter pattern protects against iOS Safari Jetsam memory kills

@@ -25,8 +25,9 @@
 - OCR on images inside native PDFs. Chart labels, axis text, figure captions become selectable. Option/Alt + drag for vertical text (Y-axis labels, rotated annotations).
 - Scanned documents detected automatically, full-page OCR runs in the background.
 - Already-dark pages (slides, dark themes) detected and left untouched.
-- Export to PDF with dark mode baked in, selectable text, and working links. Text export supports 22 writing systems, covering every major script in use today.
+- Export to PDF with dark mode baked in, selectable text, working links, and document bookmarks. Text export supports 22 writing systems, covering every major script in use today.
 - Link annotations preserved. External URLs and internal navigation both work.
+- Document outlines preserved. Nested bookmarks keep their hierarchy, open or closed state, and internal destinations.
 - Zoom with native re-rendering via PDF.js. Sharp text at any level, not bitmap stretching.
 - Installable PWA with offline support. Runs client-side, no server.
 
@@ -40,12 +41,12 @@ Scanned documents are detected by sampling a few pages. Tesseract.js runs OCR in
 
 ```
 npm install
-npm test            # 387 unit tests (~2s)
-npm run test:e2e    # 80 browser tests (Playwright)
+npm test            # 402 unit tests (~2s)
+npm run test:e2e    # 83 browser tests (Playwright)
 npm run serve       # http://localhost:8000
 ```
 
-467 tests (387 unit + 80 e2e) including visual regression screenshots, export round-trip verification, and performance benchmarks.
+485 tests (402 unit + 83 e2e) including visual regression screenshots, export round-trip verification, and performance benchmarks.
 
 ---
 

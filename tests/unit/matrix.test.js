@@ -2,9 +2,23 @@ import { describe, it, expect } from 'vitest';
 import {
   multiplyMatrices,
   transformPoint,
+  transformPdfDestination,
   computeImageBounds,
   IDENTITY_MATRIX,
 } from '../../core.js';
+
+const STANDARD_VIEWPORT = {
+  transform: [1, 0, 0, -1, 0, 792],
+  height: 792,
+};
+const CROPPED_VIEWPORT = {
+  transform: [1, 0, 0, -1, -36, 720],
+  height: 648,
+};
+const ROTATED_VIEWPORT = {
+  transform: [0, 1, 1, 0, 0, 0],
+  height: 612,
+};
 
 // ============================================================
 // multiplyMatrices
@@ -99,6 +113,104 @@ describe('transformPoint', () => {
     const [x, y] = transformPoint(rot90, 1, 0);
     expect(x).toBeCloseTo(0);
     expect(y).toBeCloseTo(1);
+  });
+});
+
+// ============================================================
+// transformPdfDestination
+// ============================================================
+
+describe('transformPdfDestination', () => {
+  it('remaps XYZ coordinates through a CropBox offset', () => {
+    const dest = [null, { name: 'XYZ' }, 72, 700, null];
+    expect(transformPdfDestination(dest, CROPPED_VIEWPORT)).toEqual([
+      'XYZ', 36, 628, null,
+    ]);
+  });
+
+  it('remaps both XYZ axes on a rotated page', () => {
+    const dest = [null, { name: 'XYZ' }, 72, 700, 1.5];
+    expect(transformPdfDestination(dest, ROTATED_VIEWPORT)).toEqual([
+      'XYZ', 700, 540, 1.5,
+    ]);
+  });
+
+  it('keeps an unresolvable rotated XYZ axis null', () => {
+    const dest = [null, { name: 'XYZ' }, null, 700, null];
+    expect(transformPdfDestination(dest, ROTATED_VIEWPORT)).toEqual([
+      'XYZ', 700, null, null,
+    ]);
+  });
+
+  it('remaps FitH on an unrotated cropped page', () => {
+    const dest = [null, { name: 'FitH' }, 700];
+    expect(transformPdfDestination(dest, CROPPED_VIEWPORT)).toEqual(['FitH', 628]);
+  });
+
+  it('remaps FitV on an unrotated cropped page', () => {
+    const dest = [null, { name: 'FitV' }, 72];
+    expect(transformPdfDestination(dest, CROPPED_VIEWPORT)).toEqual(['FitV', 36]);
+  });
+
+  it('falls back to Fit when rotation makes FitH non-equivalent', () => {
+    const dest = [null, { name: 'FitH' }, 700];
+    expect(transformPdfDestination(dest, ROTATED_VIEWPORT)).toEqual(['Fit']);
+  });
+
+  it('falls back to Fit when rotation makes FitV non-equivalent', () => {
+    const dest = [null, { name: 'FitV' }, 72];
+    expect(transformPdfDestination(dest, ROTATED_VIEWPORT)).toEqual(['Fit']);
+  });
+
+  it('normalizes FitB to the raster page bounds', () => {
+    const dest = [null, { name: 'FitB' }];
+    expect(transformPdfDestination(dest, STANDARD_VIEWPORT)).toEqual(['Fit']);
+  });
+
+  it('normalizes FitBH to FitH while preserving its coordinate', () => {
+    const dest = [null, { name: 'FitBH' }, 700];
+    expect(transformPdfDestination(dest, CROPPED_VIEWPORT)).toEqual(['FitH', 628]);
+  });
+
+  it('normalizes FitBV to FitV while preserving its coordinate', () => {
+    const dest = [null, { name: 'FitBV' }, 72];
+    expect(transformPdfDestination(dest, CROPPED_VIEWPORT)).toEqual(['FitV', 36]);
+  });
+
+  it('remaps every FitR corner through a CropBox offset', () => {
+    const dest = [null, { name: 'FitR' }, 72, 100, 200, 300];
+    expect(transformPdfDestination(dest, CROPPED_VIEWPORT)).toEqual([
+      'FitR', 36, 28, 164, 228,
+    ]);
+  });
+
+  it('rebuilds the FitR bounds after rotation', () => {
+    const dest = [null, { name: 'FitR' }, 72, 100, 200, 300];
+    expect(transformPdfDestination(dest, ROTATED_VIEWPORT)).toEqual([
+      'FitR', 100, 412, 300, 540,
+    ]);
+  });
+
+  it('falls back to Fit for malformed FitR coordinates', () => {
+    const dest = [null, { name: 'FitR' }, 72, null, 200, 300];
+    expect(transformPdfDestination(dest, STANDARD_VIEWPORT)).toEqual(['Fit']);
+  });
+
+  it('leaves unknown destination modes untouched', () => {
+    const customMode = { name: 'Custom' };
+    const dest = [null, customMode, 12, null];
+    expect(transformPdfDestination(dest, STANDARD_VIEWPORT)).toEqual([
+      customMode, 12, null,
+    ]);
+  });
+
+  it('removes right-angle floating-point residue', () => {
+    const viewport = {
+      transform: [1, 6.123e-17, 6.123e-17, -1, 0, 792],
+      height: 792,
+    };
+    const dest = [null, { name: 'XYZ' }, 0, 792, null];
+    expect(transformPdfDestination(dest, viewport)).toEqual(['XYZ', 0, 792, null]);
   });
 });
 

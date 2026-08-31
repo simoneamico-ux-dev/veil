@@ -120,7 +120,7 @@ The service worker does not call `skipWaiting()`. Veil is a document app where t
 
 ## Export to dark-mode PDF
 
-The user reads in dark mode and downloads a new PDF with dark mode baked in. The exported file works in any PDF reader on any device, with selectable text and working links.
+The user reads in dark mode and downloads a new PDF with dark mode baked in. The exported file works in any PDF reader on any device, with selectable text, working links, and document bookmarks.
 
 The technique is a **sandwich PDF**: each page is rasterized as a JPEG image (the visible dark mode rendering), with an invisible text layer on top (`opacity: 0`), the same approach used by professional document scanners.
 
@@ -130,6 +130,7 @@ Key choices:
 - **Multi-script fonts**: the invisible text layer needs fonts that cover the document's writing system. Noto Sans Regular handles Latin, Greek, Cyrillic, and math symbols. For Arabic, Hebrew, CJK, Indic, and other scripts, I lazy-load the matching Noto Sans variant from CDN with fontkit for subsetting. Latin-only documents never trigger any extra download. Each font is downloaded once and cached across exports.
 - **Width matching**: the invisible text in Noto Sans has different character widths than the original font in the PDF. Without correction, selecting text in the exported PDF would overshoot or undershoot. I measure the natural width and adjust `fontSize` so the selection aligns with the visible text in the image.
 - **Link preservation**: PDF link annotations (URLs, internal navigation) are extracted from the original and re-embedded in the exported file with a `http`/`https`/`mailto` whitelist.
+- **Outline preservation**: the PDF document outline is rebuilt after every output page exists. Nested titles, open or closed state, and internal destinations are preserved, with coordinates remapped to the flattened output geometry; external actions are deliberately left inert.
 - **Memory management**: each page's JPEG bytes are nulled after embedding, the output PDF reference is nulled after save, and every 5 pages I pause for 100ms to let the browser's garbage collector clean up. Same iOS Jetsam constraint that drives the rendering pipeline applies here too.
 
 See [`export.js`](./export.js) for the full export orchestrator.
@@ -140,10 +141,10 @@ I follow Salvatore Sanfilippo's (antirez) insight that tests give "eyes" to a co
 
 Two layers:
 
-- **Unit tests** ([`tests/unit/`](./tests/unit/)): pure functions in [`core.js`](./core.js), run with Vitest in a happy-dom environment. 387 tests covering image region extraction, OCR artifact filtering, text normalization, multi-column detection, dark mode state resolution.
-- **End-to-end tests** ([`tests/e2e/`](./tests/e2e/)): full browser integration with Playwright. 80 tests covering page rendering, text selection, OCR layer integration, export round-trip, accessibility (axe-core), visual regression (golden screenshots).
+- **Unit tests** ([`tests/unit/`](./tests/unit/)): pure functions in [`core.js`](./core.js), run with Vitest in a happy-dom environment. 402 tests covering image region extraction, PDF destination geometry, OCR artifact filtering, text normalization, multi-column detection, dark mode state resolution.
+- **End-to-end tests** ([`tests/e2e/`](./tests/e2e/)): full browser integration with Playwright. 83 tests covering page rendering, text selection, OCR layer integration, export round-trip, accessibility (axe-core), visual regression (golden screenshots).
 
-Total: 467 tests. Fixtures in [`tests/fixtures/`](./tests/fixtures/) are synthetic and public (PDF samples generated for testing). Real-world PDFs with personal or copyrighted content live outside the repository, gitignored.
+Total: 485 tests. Fixtures in [`tests/fixtures/`](./tests/fixtures/) are synthetic and public (PDF samples generated for testing). Real-world PDFs with personal or copyrighted content live outside the repository, gitignored.
 
 GitHub Actions runs both suites on Ubuntu (`ubuntu-latest`).
 
