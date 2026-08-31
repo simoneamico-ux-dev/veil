@@ -37,6 +37,8 @@ veil uses PDF.js to render each page, then applies CSS inversion for the dark ba
 
 Scanned documents are detected by sampling a few pages. Tesseract.js runs OCR in the background, and the recognized text becomes a selectable layer. Language is picked up from your system preferences.
 
+For a deeper look at veil's design decisions, see [ARCHITECTURE.md](./ARCHITECTURE.md).
+
 ## Development
 
 ```
