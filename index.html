@@ -109,6 +109,7 @@
       "OCR on embedded images via Tesseract.js",
       "Export to dark mode PDF with selectable text",
       "Link annotations preserved (internal and external)",
+      "Existing document bookmarks preserved in exported PDFs",
       "Works offline as installable PWA",
       "100% client-side, files never leave the device",
       "22 writing systems supported in export"
@@ -169,7 +170,7 @@
         "name": "Can I save a dark mode PDF that opens in other readers?",
         "acceptedAnswer": {
           "@type": "Answer",
-          "text": "Yes. veil exports a PDF with selectable text, working internal and external links, and images preserved in their original colors. The exported file opens correctly in any standard PDF reader on any device."
+          "text": "Yes. veil exports a PDF with selectable text, working internal and external links, existing document bookmarks with their hierarchy and destinations, and images preserved in their original colors. The exported file opens correctly in any standard PDF reader on any device."
         }
       },
       {
@@ -358,21 +359,21 @@ veil
           <svg width="24" height="24" viewBox="0 0 20 20" fill="none"><path d="M10 3V12" stroke="#D4A373" stroke-width="1.5" stroke-linecap="round"/><path d="M6.5 9L10 12.5L13.5 9" stroke="#D4A373" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M3 13V16H17V13" stroke="#D4A373" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
         </div>
         <div class="wf-title">Export dark PDFs</div>
-        <div class="wf-desc">Selectable text, searchable content, high quality rendering. Opens anywhere. Available on desktop only.</div>
+        <div class="wf-desc">On desktop, veil exports a dark PDF with selectable, searchable text and high-quality rendering while preserving existing document bookmarks and their hierarchy.</div>
       </div>
       <div class="workflow-card">
         <div class="wf-icon" aria-hidden="true">
           <svg width="24" height="24" viewBox="0 0 20 20" fill="none"><path d="M8.5 11.5L11.5 8.5" stroke="#D4A373" stroke-width="1.5" stroke-linecap="round"/><path d="M10.5 12.5L9 14C7.9 15.1 6.1 15.1 5 14C3.9 12.9 3.9 11.1 5 10L6.5 8.5" stroke="#D4A373" stroke-width="1.5" stroke-linecap="round"/><path d="M9.5 7.5L11 6C12.1 4.9 13.9 4.9 15 6C16.1 7.1 16.1 8.9 15 10L13.5 11.5" stroke="#D4A373" stroke-width="1.5" stroke-linecap="round"/></svg>
         </div>
         <div class="wf-title">Links preserved</div>
-        <div class="wf-desc">Internal navigation and external references work in the viewer and survive the export. Table of contents, DOIs, bibliographic links, all intact.</div>
+        <div class="wf-desc">Internal navigation and external references work in the viewer and remain active in exported PDFs, including page links, DOIs, and bibliographic references.</div>
       </div>
       <div class="workflow-card">
         <div class="wf-icon" aria-hidden="true">
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M19 17H7A5 5 0 0 1 5.07 7.39 3.2 3.2 0 0 1 6.19 6.87c.5 0 1 .11 1.45.34A6.29 6.29 0 0 1 19.78 9.08 5 5 0 0 1 19 17Z" stroke="#D4A373" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M13.5 14L18.5 19" stroke="#D4A373" stroke-width="1.5" stroke-linecap="round"/><path d="M18.5 14L13.5 19" stroke="#D4A373" stroke-width="1.5" stroke-linecap="round"/></svg>
         </div>
         <div class="wf-title">Works offline</div>
-        <div class="wf-desc">Install veil once and it runs without internet. Your PDFs, your device, no connection needed. Open it on a plane, in a library, anywhere.</div>
+        <div class="wf-desc">Once installed, veil runs offline and continues to process PDFs entirely on your device without an internet connection.</div>
       </div>
     </div>
   </section>
@@ -381,7 +382,7 @@ veil
   <section class="donate-section">
     <div class="donate-card">
       <p class="donate-text donate-narrative">Built for the researcher reading papers at 2 AM, the medical student reviewing slides before rounds, and anyone who thinks a PDF reader should respect both their eyes and their images.</p>
-      <p class="donate-text donate-bridge">If veil saved your session, your support keeps it free.</p>
+      <p class="donate-text donate-bridge">If veil is useful in your reading sessions, feel free to buy me a coffee.</p>
       <a href="https://ko-fi.com/simoneamico" target="_blank" rel="noopener noreferrer" class="donate-btn" aria-label="Support veil on Ko-fi (opens in new tab)">Support veil <svg width="13" height="13" viewBox="0 0 24 24" aria-hidden="true" style="display:inline-block;position:relative;top:0px"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78L12 21.23l8.84-8.84a5.5 5.5 0 0 0 0-7.78z" fill="currentColor"/></svg></a>
     </div>
   </section>
