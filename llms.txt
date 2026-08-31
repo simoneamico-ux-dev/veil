@@ -55,7 +55,8 @@ Stable, version 1.0. Issues reviewed periodically. Forks and community continuat
 
 ## More information
 
-- README: https://github.com/simoneamico-ux-dev/veil/blob/main/README.md
-- Case study: https://simoneamico.com/docs/featured/veil/
-- Hacker News discussion (Show HN, March 2026): https://news.ycombinator.com/item?id=47529306
-- Gigazine review: https://gigazine.net/gsc_news/en/20260401-veil-pdf/
+- [README](https://github.com/simoneamico-ux-dev/veil/blob/main/README.md): Project overview, features, and local development
+- [Architecture guide](https://github.com/simoneamico-ux-dev/veil/blob/main/ARCHITECTURE.md): Design decisions, data flow, and code map
+- [Case study](https://simoneamico.com/docs/featured/veil/): Detailed project background and implementation notes
+- [Hacker News discussion](https://news.ycombinator.com/item?id=47529306): Show HN discussion from March 2026
+- [Gigazine review](https://gigazine.net/gsc_news/en/20260401-veil-pdf/): Independent walkthrough of veil
