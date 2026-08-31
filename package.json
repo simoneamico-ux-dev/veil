@@ -11,9 +11,9 @@
     "serve": "python3 -m http.server 8000"
   },
   "devDependencies": {
-    "@playwright/test": "^1.52.0",
-    "happy-dom": "^20.8.4",
+    "@playwright/test": "^1.62.1",
+    "happy-dom": "^20.12.0",
     "pdf-lib": "^1.17.1",
-    "vitest": "^3.2.1"
+    "vitest": "^3.2.7"
   }
 }
