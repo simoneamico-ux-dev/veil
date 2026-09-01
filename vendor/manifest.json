@@ -1,12 +1,14 @@
 {
-  "schemaVersion": 1,
+  "schemaVersion": 2,
   "maximumFileBytes": 8500000,
   "assets": [
     {
       "id": "pdfjs",
       "version": "5.4.149",
       "license": "Apache-2.0",
-      "licenseFiles": ["vendor/licenses/pdfjs-Apache-2.0.txt"],
+      "licenseFiles": [
+        "vendor/licenses/pdfjs-Apache-2.0.txt"
+      ],
       "source": "https://github.com/mozilla/pdf.js/releases/tag/v5.4.149",
       "files": [
         {
@@ -25,7 +27,10 @@
       "id": "pdf-lib",
       "version": "1.17.1",
       "license": "MIT",
-      "licenseFiles": ["vendor/licenses/pdf-lib-MIT.md"],
+      "licenseFiles": [
+        "vendor/licenses/pdf-lib-MIT.md",
+        "vendor/licenses/pdf-lib-third-party-licenses.txt"
+      ],
       "source": "https://www.npmjs.com/package/pdf-lib/v/1.17.1",
       "files": [
         {
@@ -33,26 +38,369 @@
           "bytes": 523417,
           "sha256": "72c052d97b4d5d9fa6cdbdcb7ad709f03d4ddb1122390cb3afeba4d88651d969"
         }
+      ],
+      "embeddedComponents": [
+        {
+          "id": "@pdf-lib/standard-fonts",
+          "version": "1.0.0",
+          "license": "MIT",
+          "licenseFiles": [
+            "vendor/licenses/pdf-lib-third-party-licenses.txt"
+          ],
+          "source": "https://www.npmjs.com/package/@pdf-lib/standard-fonts/v/1.0.0"
+        },
+        {
+          "id": "@pdf-lib/upng",
+          "version": "1.0.1",
+          "license": "MIT",
+          "licenseFiles": [
+            "vendor/licenses/pdf-lib-third-party-licenses.txt"
+          ],
+          "source": "https://www.npmjs.com/package/@pdf-lib/upng/v/1.0.1"
+        },
+        {
+          "id": "pako",
+          "version": "1.0.10",
+          "license": "MIT AND Zlib",
+          "licenseFiles": [
+            "vendor/licenses/pdf-lib-third-party-licenses.txt"
+          ],
+          "source": "https://www.npmjs.com/package/pako/v/1.0.10"
+        },
+        {
+          "id": "pako",
+          "version": "1.0.11",
+          "license": "MIT AND Zlib",
+          "licenseFiles": [
+            "vendor/licenses/pdf-lib-third-party-licenses.txt"
+          ],
+          "source": "https://www.npmjs.com/package/pako/v/1.0.11"
+        },
+        {
+          "id": "tslib",
+          "version": "1.11.1",
+          "license": "Apache-2.0",
+          "licenseFiles": [
+            "vendor/licenses/pdf-lib-third-party-licenses.txt"
+          ],
+          "source": "https://www.npmjs.com/package/tslib/v/1.11.1"
+        }
       ]
     },
     {
       "id": "fontkit",
       "version": "1.1.1",
       "license": "MIT",
-      "licenseFiles": ["vendor/licenses/fontkit-MIT.md"],
+      "licenseFiles": [
+        "vendor/licenses/fontkit-MIT.md",
+        "vendor/licenses/fontkit-third-party-licenses.txt"
+      ],
       "source": "https://www.npmjs.com/package/@pdf-lib/fontkit/v/1.1.1",
       "tree": {
         "path": "vendor/fontkit/1.1.1",
         "fileCount": 2,
         "bytes": 758582,
         "sha256": "035cb7433a38c3100bd6e2104f854af76743c94320fd08ec75112cca1688ed40"
-      }
+      },
+      "embeddedComponents": [
+        {
+          "id": "@pdf-lib/brotli",
+          "version": "0.0.0",
+          "license": "MIT AND Apache-2.0",
+          "licenseFiles": [
+            "vendor/licenses/fontkit-third-party-licenses.txt"
+          ],
+          "source": "https://www.npmjs.com/package/@pdf-lib/brotli/v/0.0.0"
+        },
+        {
+          "id": "@pdf-lib/restructure",
+          "version": "0.0.1",
+          "license": "MIT",
+          "licenseFiles": [
+            "vendor/licenses/fontkit-third-party-licenses.txt"
+          ],
+          "source": "https://www.npmjs.com/package/@pdf-lib/restructure/v/0.0.1"
+        },
+        {
+          "id": "@pdf-lib/unicode-properties",
+          "version": "0.0.1",
+          "license": "MIT",
+          "licenseFiles": [
+            "vendor/licenses/fontkit-third-party-licenses.txt"
+          ],
+          "source": "https://www.npmjs.com/package/@pdf-lib/unicode-properties/v/0.0.1"
+        },
+        {
+          "id": "base64-arraybuffer",
+          "version": "0.1.5",
+          "license": "MIT",
+          "licenseFiles": [
+            "vendor/licenses/fontkit-third-party-licenses.txt"
+          ],
+          "source": "https://www.npmjs.com/package/base64-arraybuffer/v/0.1.5"
+        },
+        {
+          "id": "base64-js",
+          "version": "1.3.0",
+          "license": "MIT",
+          "licenseFiles": [
+            "vendor/licenses/fontkit-third-party-licenses.txt"
+          ],
+          "source": "https://www.npmjs.com/package/base64-js/v/1.3.0"
+        },
+        {
+          "id": "base64-js",
+          "version": "1.3.1",
+          "license": "MIT",
+          "licenseFiles": [
+            "vendor/licenses/fontkit-third-party-licenses.txt"
+          ],
+          "source": "https://www.npmjs.com/package/base64-js/v/1.3.1"
+        },
+        {
+          "id": "buffer",
+          "version": "5.6.0",
+          "license": "MIT",
+          "licenseFiles": [
+            "vendor/licenses/fontkit-third-party-licenses.txt"
+          ],
+          "source": "https://www.npmjs.com/package/buffer/v/5.6.0"
+        },
+        {
+          "id": "clone",
+          "version": "1.0.4",
+          "license": "MIT",
+          "licenseFiles": [
+            "vendor/licenses/fontkit-third-party-licenses.txt"
+          ],
+          "source": "https://www.npmjs.com/package/clone/v/1.0.4"
+        },
+        {
+          "id": "deep-equal",
+          "version": "1.1.1",
+          "license": "MIT",
+          "licenseFiles": [
+            "vendor/licenses/fontkit-third-party-licenses.txt"
+          ],
+          "source": "https://www.npmjs.com/package/deep-equal/v/1.1.1"
+        },
+        {
+          "id": "define-properties",
+          "version": "1.1.3",
+          "license": "MIT",
+          "licenseFiles": [
+            "vendor/licenses/fontkit-third-party-licenses.txt"
+          ],
+          "source": "https://www.npmjs.com/package/define-properties/v/1.1.3"
+        },
+        {
+          "id": "dfa",
+          "version": "1.2.0",
+          "license": "MIT",
+          "licenseFiles": [
+            "vendor/licenses/fontkit-third-party-licenses.txt"
+          ],
+          "source": "https://www.npmjs.com/package/dfa/v/1.2.0"
+        },
+        {
+          "id": "es-abstract",
+          "version": "1.17.5",
+          "license": "MIT",
+          "licenseFiles": [
+            "vendor/licenses/fontkit-third-party-licenses.txt"
+          ],
+          "source": "https://www.npmjs.com/package/es-abstract/v/1.17.5"
+        },
+        {
+          "id": "function-bind",
+          "version": "1.1.1",
+          "license": "MIT",
+          "licenseFiles": [
+            "vendor/licenses/fontkit-third-party-licenses.txt"
+          ],
+          "source": "https://www.npmjs.com/package/function-bind/v/1.1.1"
+        },
+        {
+          "id": "has",
+          "version": "1.0.3",
+          "license": "MIT",
+          "licenseFiles": [
+            "vendor/licenses/fontkit-third-party-licenses.txt"
+          ],
+          "source": "https://www.npmjs.com/package/has/v/1.0.3"
+        },
+        {
+          "id": "has-symbols",
+          "version": "1.0.1",
+          "license": "MIT",
+          "licenseFiles": [
+            "vendor/licenses/fontkit-third-party-licenses.txt"
+          ],
+          "source": "https://www.npmjs.com/package/has-symbols/v/1.0.1"
+        },
+        {
+          "id": "iconv-lite",
+          "version": "0.4.24",
+          "license": "MIT",
+          "licenseFiles": [
+            "vendor/licenses/fontkit-third-party-licenses.txt"
+          ],
+          "source": "https://www.npmjs.com/package/iconv-lite/v/0.4.24"
+        },
+        {
+          "id": "ieee754",
+          "version": "1.1.13",
+          "license": "BSD-3-Clause",
+          "licenseFiles": [
+            "vendor/licenses/fontkit-third-party-licenses.txt"
+          ],
+          "source": "https://www.npmjs.com/package/ieee754/v/1.1.13"
+        },
+        {
+          "id": "is-arguments",
+          "version": "1.0.4",
+          "license": "MIT",
+          "licenseFiles": [
+            "vendor/licenses/fontkit-third-party-licenses.txt"
+          ],
+          "source": "https://www.npmjs.com/package/is-arguments/v/1.0.4"
+        },
+        {
+          "id": "is-date-object",
+          "version": "1.0.2",
+          "license": "MIT",
+          "licenseFiles": [
+            "vendor/licenses/fontkit-third-party-licenses.txt"
+          ],
+          "source": "https://www.npmjs.com/package/is-date-object/v/1.0.2"
+        },
+        {
+          "id": "is-regex",
+          "version": "1.0.5",
+          "license": "MIT",
+          "licenseFiles": [
+            "vendor/licenses/fontkit-third-party-licenses.txt"
+          ],
+          "source": "https://www.npmjs.com/package/is-regex/v/1.0.5"
+        },
+        {
+          "id": "object-is",
+          "version": "1.1.2",
+          "license": "MIT",
+          "licenseFiles": [
+            "vendor/licenses/fontkit-third-party-licenses.txt"
+          ],
+          "source": "https://www.npmjs.com/package/object-is/v/1.1.2"
+        },
+        {
+          "id": "object-keys",
+          "version": "1.1.1",
+          "license": "MIT",
+          "licenseFiles": [
+            "vendor/licenses/fontkit-third-party-licenses.txt"
+          ],
+          "source": "https://www.npmjs.com/package/object-keys/v/1.1.1"
+        },
+        {
+          "id": "pako",
+          "version": "1.0.11",
+          "license": "MIT AND Zlib",
+          "licenseFiles": [
+            "vendor/licenses/fontkit-third-party-licenses.txt"
+          ],
+          "source": "https://www.npmjs.com/package/pako/v/1.0.11"
+        },
+        {
+          "id": "process-es6",
+          "version": "0.11.6",
+          "license": "MIT",
+          "licenseFiles": [
+            "vendor/licenses/fontkit-third-party-licenses.txt"
+          ],
+          "source": "https://www.npmjs.com/package/process-es6/v/0.11.6"
+        },
+        {
+          "id": "regexp.prototype.flags",
+          "version": "1.3.0",
+          "license": "MIT",
+          "licenseFiles": [
+            "vendor/licenses/fontkit-third-party-licenses.txt"
+          ],
+          "source": "https://www.npmjs.com/package/regexp.prototype.flags/v/1.3.0"
+        },
+        {
+          "id": "rollup-plugin-node-builtins",
+          "version": "2.1.2",
+          "license": "MIT AND ISC",
+          "licenseFiles": [
+            "vendor/licenses/fontkit-third-party-licenses.txt"
+          ],
+          "source": "https://www.npmjs.com/package/rollup-plugin-node-builtins/v/2.1.2"
+        },
+        {
+          "id": "rollup-plugin-node-globals",
+          "version": "1.4.0",
+          "license": "MIT",
+          "licenseFiles": [
+            "vendor/licenses/fontkit-third-party-licenses.txt"
+          ],
+          "source": "https://www.npmjs.com/package/rollup-plugin-node-globals/v/1.4.0"
+        },
+        {
+          "id": "safer-buffer",
+          "version": "2.1.2",
+          "license": "MIT",
+          "licenseFiles": [
+            "vendor/licenses/fontkit-third-party-licenses.txt"
+          ],
+          "source": "https://www.npmjs.com/package/safer-buffer/v/2.1.2"
+        },
+        {
+          "id": "string_decoder",
+          "version": "0.10.31",
+          "license": "MIT",
+          "licenseFiles": [
+            "vendor/licenses/fontkit-third-party-licenses.txt"
+          ],
+          "source": "https://www.npmjs.com/package/string_decoder/v/0.10.31"
+        },
+        {
+          "id": "tiny-inflate",
+          "version": "1.0.2",
+          "license": "MIT",
+          "licenseFiles": [
+            "vendor/licenses/fontkit-third-party-licenses.txt"
+          ],
+          "source": "https://www.npmjs.com/package/tiny-inflate/v/1.0.2"
+        },
+        {
+          "id": "tiny-inflate",
+          "version": "1.0.3",
+          "license": "MIT",
+          "licenseFiles": [
+            "vendor/licenses/fontkit-third-party-licenses.txt"
+          ],
+          "source": "https://www.npmjs.com/package/tiny-inflate/v/1.0.3"
+        },
+        {
+          "id": "unicode-trie",
+          "version": "0.3.1",
+          "license": "MIT",
+          "licenseFiles": [
+            "vendor/licenses/fontkit-third-party-licenses.txt"
+          ],
+          "source": "https://www.npmjs.com/package/unicode-trie/v/0.3.1"
+        }
+      ]
     },
     {
       "id": "noto-export-fonts",
       "version": "76fff9eee60dcef8381bfcae8d0b4311e2186e67",
       "license": "OFL-1.1",
-      "licenseFiles": ["vendor/licenses/noto-OFL-1.1.txt"],
+      "licenseFiles": [
+        "vendor/licenses/noto-OFL-1.1.txt",
+        "vendor/licenses/noto-font-notices.txt"
+      ],
       "source": "https://github.com/notofonts/notofonts.github.io/tree/76fff9eee60dcef8381bfcae8d0b4311e2186e67/fonts",
       "tree": {
         "path": "vendor/fonts/noto/76fff9eee60dcef8381bfcae8d0b4311e2186e67",
@@ -65,7 +413,10 @@
       "id": "noto-cjk-export-fonts",
       "version": "2.004@f8d157532fbfaeda587e826d4cd5b21a49186f7c",
       "license": "OFL-1.1",
-      "licenseFiles": ["vendor/licenses/noto-cjk-OFL-1.1.txt"],
+      "licenseFiles": [
+        "vendor/licenses/noto-cjk-OFL-1.1.txt",
+        "vendor/licenses/noto-font-notices.txt"
+      ],
       "source": "https://github.com/notofonts/noto-cjk/tree/f8d157532fbfaeda587e826d4cd5b21a49186f7c/Sans/OTF",
       "multipart": [
         {
@@ -101,7 +452,9 @@
       "id": "ibm-plex-sans",
       "version": "Google Fonts v23",
       "license": "OFL-1.1",
-      "licenseFiles": ["vendor/licenses/ibm-plex-sans-OFL-1.1.txt"],
+      "licenseFiles": [
+        "vendor/licenses/ibm-plex-sans-OFL-1.1.txt"
+      ],
       "source": "https://fonts.gstatic.com/s/ibmplexsans/v23/",
       "sourceFiles": {
         "vendor/fonts/ibm-plex-sans/23/ibm-plex-sans-italic-cyrillic-ext.woff2": "https://fonts.gstatic.com/s/ibmplexsans/v23/zYXEKVElMYYaJe8bpLHnCwDKhdTEG46kmUZQCX598fQbM4jw8V78x9OWIhqbQ5g3voKE7-jfBVSl7w.woff2",
@@ -133,40 +486,245 @@
       "license": "Apache-2.0",
       "licenseFiles": [
         "vendor/licenses/tesseract.js-Apache-2.0.md",
-        "vendor/licenses/tesseract.js-bundle-notices.txt",
-        "vendor/licenses/tesseract-worker-bundle-notices.txt"
+        "vendor/tesseract.js/5.1.1/tesseract.min.js.LICENSE.txt",
+        "vendor/tesseract.js/5.1.1/worker.min.js.LICENSE.txt",
+        "vendor/licenses/tesseract.js-third-party-licenses.txt"
       ],
       "source": "https://www.npmjs.com/package/tesseract.js/v/5.1.1",
       "tree": {
         "path": "vendor/tesseract.js/5.1.1",
-        "fileCount": 2,
-        "bytes": 190899,
-        "sha256": "848a7647aa0584867c97b347c2c614af1262054467142a7fdad6e26ce807599e"
-      }
+        "fileCount": 4,
+        "bytes": 191514,
+        "sha256": "77ecf1ddcd7506ba81af6b57a3f90d234655de6ca40bed5e469c82af69f550d3"
+      },
+      "embeddedComponents": [
+        {
+          "id": "base64-js",
+          "version": "1.5.1",
+          "license": "MIT",
+          "licenseFiles": [
+            "vendor/licenses/tesseract.js-third-party-licenses.txt"
+          ],
+          "source": "https://www.npmjs.com/package/base64-js/v/1.5.1"
+        },
+        {
+          "id": "bmp-js",
+          "version": "0.1.0",
+          "license": "MIT",
+          "licenseFiles": [
+            "vendor/licenses/tesseract.js-third-party-licenses.txt"
+          ],
+          "source": "https://www.npmjs.com/package/bmp-js/v/0.1.0"
+        },
+        {
+          "id": "buffer",
+          "version": "6.0.3",
+          "license": "MIT",
+          "licenseFiles": [
+            "vendor/licenses/tesseract.js-third-party-licenses.txt"
+          ],
+          "source": "https://www.npmjs.com/package/buffer/v/6.0.3"
+        },
+        {
+          "id": "idb-keyval",
+          "version": "6.2.0",
+          "license": "Apache-2.0",
+          "licenseFiles": [
+            "vendor/licenses/tesseract.js-third-party-licenses.txt"
+          ],
+          "source": "https://www.npmjs.com/package/idb-keyval/v/6.2.0"
+        },
+        {
+          "id": "ieee754",
+          "version": "1.2.1",
+          "license": "BSD-3-Clause",
+          "licenseFiles": [
+            "vendor/licenses/tesseract.js-third-party-licenses.txt"
+          ],
+          "source": "https://www.npmjs.com/package/ieee754/v/1.2.1"
+        },
+        {
+          "id": "is-electron",
+          "version": "2.2.2",
+          "license": "MIT",
+          "licenseFiles": [
+            "vendor/licenses/tesseract.js-third-party-licenses.txt"
+          ],
+          "source": "https://www.npmjs.com/package/is-electron/v/2.2.2"
+        },
+        {
+          "id": "is-url",
+          "version": "1.2.4",
+          "license": "MIT",
+          "licenseFiles": [
+            "vendor/licenses/tesseract.js-third-party-licenses.txt"
+          ],
+          "source": "https://www.npmjs.com/package/is-url/v/1.2.4"
+        },
+        {
+          "id": "regenerator-runtime",
+          "version": "0.13.11",
+          "license": "MIT",
+          "licenseFiles": [
+            "vendor/licenses/tesseract.js-third-party-licenses.txt"
+          ],
+          "source": "https://www.npmjs.com/package/regenerator-runtime/v/0.13.11"
+        },
+        {
+          "id": "wasm-feature-detect",
+          "version": "1.2.11",
+          "license": "Apache-2.0",
+          "licenseFiles": [
+            "vendor/licenses/tesseract.js-third-party-licenses.txt"
+          ],
+          "source": "https://www.npmjs.com/package/wasm-feature-detect/v/1.2.11"
+        },
+        {
+          "id": "zlibjs",
+          "version": "0.3.1",
+          "license": "MIT",
+          "licenseFiles": [
+            "vendor/licenses/tesseract.js-third-party-licenses.txt"
+          ],
+          "source": "https://www.npmjs.com/package/zlibjs/v/0.3.1"
+        }
+      ]
     },
     {
       "id": "tesseract.js-core",
       "version": "5.1.1",
       "license": "Apache-2.0",
-      "licenseFiles": ["vendor/licenses/tesseract-core-Apache-2.0.txt"],
+      "licenseFiles": [
+        "vendor/licenses/tesseract-core-Apache-2.0.txt",
+        "vendor/licenses/tesseract-core-third-party-licenses.txt"
+      ],
       "source": "https://www.npmjs.com/package/tesseract.js-core/v/5.1.1",
       "tree": {
         "path": "vendor/tesseract-core/5.1.1",
         "fileCount": 2,
         "bytes": 7876934,
         "sha256": "6ba3d7247c004f40025d1a3994cece1eee804b776f13180eceba4c56692aaef8"
-      }
+      },
+      "embeddedComponents": [
+        {
+          "id": "giflib",
+          "version": "fa37672085ce4b3d62c51627ab3c8cf2dda8009a",
+          "license": "MIT",
+          "licenseFiles": [
+            "vendor/licenses/tesseract-core-third-party-licenses.txt"
+          ],
+          "source": "https://github.com/mirrorer/giflib/tree/fa37672085ce4b3d62c51627ab3c8cf2dda8009a"
+        },
+        {
+          "id": "leptonica",
+          "version": "4af068b56a9674da915debea4ed7e1b9885b17e8",
+          "license": "BSD-2-Clause",
+          "licenseFiles": [
+            "vendor/licenses/tesseract-core-third-party-licenses.txt"
+          ],
+          "source": "https://github.com/DanBloomberg/leptonica/tree/4af068b56a9674da915debea4ed7e1b9885b17e8"
+        },
+        {
+          "id": "libjpeg",
+          "version": "6c0fcb8ddee365e7abc4d332662b06900612e923",
+          "license": "IJG",
+          "licenseFiles": [
+            "vendor/licenses/tesseract-core-third-party-licenses.txt"
+          ],
+          "source": "https://github.com/LuaDist/libjpeg/tree/6c0fcb8ddee365e7abc4d332662b06900612e923"
+        },
+        {
+          "id": "libpng",
+          "version": "a37d4836519517bdce6cb9d956092321eca3e73b",
+          "license": "Libpng-2.0",
+          "licenseFiles": [
+            "vendor/licenses/tesseract-core-third-party-licenses.txt"
+          ],
+          "source": "https://github.com/glennrp/libpng/tree/a37d4836519517bdce6cb9d956092321eca3e73b"
+        },
+        {
+          "id": "libtiff",
+          "version": "b51bb157123264e26d34c09cc673d213aea61fc7",
+          "license": "libtiff",
+          "licenseFiles": [
+            "vendor/licenses/tesseract-core-third-party-licenses.txt"
+          ],
+          "source": "https://gitlab.com/libtiff/libtiff/-/tree/b51bb157123264e26d34c09cc673d213aea61fc7"
+        },
+        {
+          "id": "libwebp",
+          "version": "20ef03ee351d4ff03fc5ff3ec4804a879d1b9d5c",
+          "license": "BSD-3-Clause",
+          "licenseFiles": [
+            "vendor/licenses/tesseract-core-third-party-licenses.txt"
+          ],
+          "source": "https://github.com/webmproject/libwebp/tree/20ef03ee351d4ff03fc5ff3ec4804a879d1b9d5c"
+        },
+        {
+          "id": "openlibm",
+          "version": "ae2d91698508701c83cab83714d42a1146dccf85",
+          "license": "LicenseRef-OpenLibm",
+          "licenseFiles": [
+            "vendor/licenses/tesseract-core-third-party-licenses.txt"
+          ],
+          "source": "https://github.com/JuliaMath/openlibm/tree/ae2d91698508701c83cab83714d42a1146dccf85"
+        },
+        {
+          "id": "tesseract",
+          "version": "e20b1c6553c8f68c4bbff1feef0a64064959a427",
+          "license": "Apache-2.0",
+          "licenseFiles": [
+            "vendor/licenses/tesseract-core-Apache-2.0.txt",
+            "vendor/licenses/tesseract-core-third-party-licenses.txt"
+          ],
+          "source": "https://github.com/Balearica/tesseract/tree/e20b1c6553c8f68c4bbff1feef0a64064959a427"
+        },
+        {
+          "id": "zlib",
+          "version": "21767c654d31d2dccdde4330529775c6c5fd5389",
+          "license": "Zlib",
+          "licenseFiles": [
+            "vendor/licenses/tesseract-core-third-party-licenses.txt"
+          ],
+          "source": "https://github.com/madler/zlib/tree/21767c654d31d2dccdde4330529775c6c5fd5389"
+        }
+      ]
     },
     {
       "id": "tesseract-language-data",
       "version": "4.0.0_best_int@1.0.0",
       "license": "Apache-2.0",
-      "licenseFiles": ["vendor/licenses/tesseract-data-license.txt"],
+      "licenseFiles": [
+        "vendor/licenses/tesseract-data-license.txt"
+      ],
       "source": "https://registry.npmjs.org/@tesseract.js-data/{language}/-/{language}-1.0.0.tgz",
       "languages": [
-        "ara", "ces", "chi_sim", "dan", "deu", "ell", "eng", "fin", "fra",
-        "hin", "hun", "ita", "jpn", "kor", "nld", "nor", "pol", "por",
-        "ron", "rus", "spa", "swe", "tha", "tur", "ukr", "vie"
+        "ara",
+        "ces",
+        "chi_sim",
+        "dan",
+        "deu",
+        "ell",
+        "eng",
+        "fin",
+        "fra",
+        "hin",
+        "hun",
+        "ita",
+        "jpn",
+        "kor",
+        "nld",
+        "nor",
+        "pol",
+        "por",
+        "ron",
+        "rus",
+        "spa",
+        "swe",
+        "tha",
+        "tur",
+        "ukr",
+        "vie"
       ],
       "tree": {
         "path": "vendor/tesseract-data/4.0.0_best_int",
@@ -179,9 +737,9 @@
   "supportTrees": [
     {
       "path": "vendor/licenses",
-      "fileCount": 11,
-      "bytes": 60154,
-      "sha256": "dccc255e5345dcdbb83dc5e00d9cf69db0f1433a38352e7a30babc77f1dbb102"
+      "fileCount": 14,
+      "bytes": 168696,
+      "sha256": "444ab8e9e798bfb0a9bb78786179bc4b93bc3502a72b8e378afd24d346861058"
     }
   ]
 }

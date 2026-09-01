@@ -18,6 +18,7 @@ const vendorRoot = join(projectRoot, 'vendor');
 const manifestPath = join(vendorRoot, 'manifest.json');
 const manifest = JSON.parse(readFileSync(manifestPath, 'utf8'));
 const expectedFiles = new Set();
+const referencedLicenseFiles = new Set();
 
 function sha256(value) {
   return createHash('sha256').update(value).digest('hex');
@@ -35,6 +36,21 @@ function verifySource(source, label) {
   if (url.hostname === 'fonts.googleapis.com') throw new Error(`Mutable stylesheet source for ${label}`);
   if (resolvedSource === 'https://www.npmjs.com/org/tesseract.js-data') {
     throw new Error(`Mutable package listing source for ${label}`);
+  }
+}
+
+function verifyLicenseFiles(licenseFiles, label) {
+  if (!Array.isArray(licenseFiles) || !licenseFiles.length) {
+    throw new Error(`Missing license files for ${label}`);
+  }
+  if (new Set(licenseFiles).size !== licenseFiles.length) {
+    throw new Error(`Duplicate license files for ${label}`);
+  }
+
+  for (const licenseFile of licenseFiles) {
+    const stats = lstatSync(resolveProjectPath(licenseFile));
+    if (!stats.isFile()) throw new Error(`Not a regular license file: ${licenseFile}`);
+    referencedLicenseFiles.add(licenseFile);
   }
 }
 
@@ -182,18 +198,38 @@ function verifyLanguageSources(asset) {
   }
 }
 
-if (manifest.schemaVersion !== 1) throw new Error('Unsupported vendor manifest schema');
+function verifyEmbeddedComponents(asset) {
+  if (!asset.embeddedComponents) return;
+  if (!Array.isArray(asset.embeddedComponents) || !asset.embeddedComponents.length) {
+    throw new Error(`Invalid embedded components for ${asset.id}`);
+  }
 
+  const identities = new Set();
+  for (const component of asset.embeddedComponents) {
+    if (!component.id || !component.version || !component.license || !component.source) {
+      throw new Error(`Every embedded component in ${asset.id} needs id, version, license, and source`);
+    }
+
+    const identity = `${component.id}@${component.version}`;
+    if (identities.has(identity)) throw new Error(`Duplicate embedded component in ${asset.id}: ${identity}`);
+    identities.add(identity);
+    verifySource(component.source, `${asset.id}/${identity}`);
+    verifyLicenseFiles(component.licenseFiles, `${asset.id}/${identity}`);
+  }
+}
+
+if (manifest.schemaVersion !== 2) throw new Error('Unsupported vendor manifest schema');
+
+const assetIds = new Set();
 for (const asset of manifest.assets) {
   if (!asset.id || !asset.version || !asset.license || !asset.source) {
     throw new Error('Every vendor asset needs id, version, license, and source');
   }
+  if (assetIds.has(asset.id)) throw new Error(`Duplicate vendor asset: ${asset.id}`);
+  assetIds.add(asset.id);
   verifySource(asset.source, asset.id);
-
-  for (const licenseFile of asset.licenseFiles || []) {
-    resolveProjectPath(licenseFile);
-    lstatSync(resolveProjectPath(licenseFile));
-  }
+  verifyLicenseFiles(asset.licenseFiles, asset.id);
+  verifyEmbeddedComponents(asset);
   for (const file of asset.files || []) verifyFile(file);
   if (asset.tree) verifyTree(asset.tree);
   for (const multipart of asset.multipart || []) verifyMultipart(multipart);
@@ -217,6 +253,12 @@ for (const path of actualFiles) {
 
 for (const path of expectedFiles) {
   if (!actualFiles.includes(path)) throw new Error(`Missing vendor file: ${path}`);
+}
+
+const actualLicenseFiles = walkFiles(join(vendorRoot, 'licenses'))
+  .map(path => normalizePath(relative(projectRoot, path)));
+for (const path of actualLicenseFiles) {
+  if (!referencedLicenseFiles.has(path)) throw new Error(`Unreferenced license file: ${path}`);
 }
 
 const totalBytes = actualFiles.reduce(

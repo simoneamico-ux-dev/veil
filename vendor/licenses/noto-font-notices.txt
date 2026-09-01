@@ -1,0 +1,28 @@
+Noto font copyright notices
+============================
+
+These notices are retained in the embedded name tables of the unmodified font files. The complete SIL Open Font License 1.1 text is provided separately for the Noto and Noto CJK collections.
+
+- NotoSans-Regular.ttf: Copyright 2022 The Noto Project Authors (https://github.com/notofonts/latin-greek-cyrillic)
+- NotoSansArabic-Regular.ttf: Copyright 2022 The Noto Project Authors (https://github.com/notofonts/arabic)
+- NotoSansArmenian-Regular.ttf: Copyright 2022 The Noto Project Authors (https://github.com/notofonts/armenian)
+- NotoSansBengali-Regular.ttf: Copyright 2025 The Noto Project Authors (https://github.com/notofonts/bengali)
+- NotoSansDevanagari-Regular.ttf: Copyright 2022 The Noto Project Authors (https://github.com/notofonts/devanagari)
+- NotoSansEthiopic-Regular.ttf: Copyright 2022 The Noto Project Authors (https://github.com/notofonts/ethiopic)
+- NotoSansGeorgian-Regular.ttf: Copyright 2022 The Noto Project Authors (https://github.com/notofonts/georgian)
+- NotoSansGujarati-Regular.ttf: Copyright 2022 The Noto Project Authors (https://github.com/notofonts/gujarati)
+- NotoSansGurmukhi-Regular.ttf: Copyright 2022 The Noto Project Authors (https://github.com/notofonts/gurmukhi)
+- NotoSansHebrew-Regular.ttf: Copyright 2024 The Noto Project Authors (https://github.com/notofonts/hebrew)
+- NotoSansKannada-Regular.ttf: Copyright 2022 The Noto Project Authors (https://github.com/notofonts/kannada)
+- NotoSansKhmer-Regular.ttf: Copyright 2022 The Noto Project Authors (https://github.com/notofonts/khmer)
+- NotoSansLao-Regular.ttf: Copyright 2022 The Noto Project Authors (https://github.com/notofonts/lao)
+- NotoSansMalayalam-Regular.ttf: Copyright 2022 The Noto Project Authors (https://github.com/notofonts/malayalam)
+- NotoSansMyanmar-Regular.ttf: Copyright 2022 The Noto Project Authors (https://github.com/notofonts/myanmar)
+- NotoSansSinhala-Regular.ttf: Copyright 2022 The Noto Project Authors (https://github.com/notofonts/sinhala)
+- NotoSansTamil-Regular.ttf: Copyright 2022 The Noto Project Authors (https://github.com/notofonts/tamil)
+- NotoSansTelugu-Regular.ttf: Copyright 2022 The Noto Project Authors (https://github.com/notofonts/telugu)
+- NotoSansThai-Regular.ttf: Copyright 2022 The Noto Project Authors (https://github.com/notofonts/thai)
+- NotoSerifTibetan-Regular.ttf: Copyright 2022 The Noto Project Authors (https://github.com/notofonts/tibetan)
+- NotoSansCJKjp-Regular.otf: © 2014-2021 Adobe (http://www.adobe.com/).
+- NotoSansCJKkr-Regular.otf: © 2014-2021 Adobe (http://www.adobe.com/).
+- NotoSansCJKsc-Regular.otf: © 2014-2021 Adobe (http://www.adobe.com/).
