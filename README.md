@@ -43,12 +43,12 @@ For a deeper look at veil's design decisions, see [ARCHITECTURE.md](./ARCHITECTU
 
 ```
 npm install
-npm test            # 402 unit tests (~2s)
-npm run test:e2e    # 83 browser tests (Playwright)
+npm test            # integrity checks + 412 unit tests
+npm run test:e2e    # 86 browser tests (Playwright)
 npm run serve       # http://localhost:8000
 ```
 
-485 tests (402 unit + 83 e2e) including visual regression screenshots, export round-trip verification, and performance benchmarks.
+498 tests (412 unit + 86 e2e) including visual regression screenshots, export round-trip verification, offline runtime verification, and performance benchmarks.
 
 ---
 
