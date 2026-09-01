@@ -73,7 +73,7 @@
    *   background). The pasted text arrives in the target app's
    *   default font with no veil artifacts
    *
-   * The test suite (412 unit + 86 e2e) acts as the "eyes" for this
+   * The test suite acts as the "eyes" for this
    * file, following Salvatore Sanfilippo's (antirez) insight that
    * without tests, a coding agent iterates blind. The pure functions
    * are tested in core.js. The integration (does the page render,

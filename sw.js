@@ -17,7 +17,7 @@
 
 // --- CONSTANTS ---
 
-const SHELL_CACHE_REVISION = '5b86544c3c3a';
+const SHELL_CACHE_REVISION = 'e61f61bc22ae';
 const RUNTIME_CACHE_REVISION = '8b874267d44c';
 const SHELL_CACHE = `veil-shell-${SHELL_CACHE_REVISION}`;
 const RUNTIME_CACHE = `veil-runtime-${RUNTIME_CACHE_REVISION}`;
