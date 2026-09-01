@@ -1,0 +1,36 @@
+/*
+  Content-Security-Policy: default-src 'self'; script-src 'self' 'wasm-unsafe-eval'; style-src 'self' 'unsafe-inline'; font-src 'self'; connect-src 'self'; img-src 'self' blob: data:; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'
+  Permissions-Policy: camera=(), geolocation=(), microphone=()
+  Referrer-Policy: strict-origin-when-cross-origin
+  X-Content-Type-Options: nosniff
+  X-Frame-Options: DENY
+
+/sw.js
+  Cache-Control: public, max-age=0, must-revalidate
+
+/vendor/pdfjs/*
+  Cache-Control: public, max-age=31536000, immutable
+
+/vendor/pdf-lib/*
+  Cache-Control: public, max-age=31536000, immutable
+
+/vendor/fontkit/*
+  Cache-Control: public, max-age=31536000, immutable
+
+/vendor/fonts/ibm-plex-sans/*
+  Cache-Control: public, max-age=31536000, immutable
+
+/vendor/fonts/noto/*
+  Cache-Control: public, max-age=31536000, immutable
+
+/vendor/fonts/noto-cjk/*
+  Cache-Control: public, max-age=31536000, immutable
+
+/vendor/tesseract.js/*
+  Cache-Control: public, max-age=31536000, immutable
+
+/vendor/tesseract-core/*
+  Cache-Control: public, max-age=31536000, immutable
+
+/vendor/tesseract-data/*
+  Cache-Control: public, max-age=31536000, immutable

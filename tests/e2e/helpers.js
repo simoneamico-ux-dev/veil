@@ -18,7 +18,7 @@ export const READER_URL = '/reader.html';
 export async function loadPDF(page, filename) {
   const filePath = join(FIXTURES_DIR, filename);
 
-  // Wait for app module to fully initialize (PDF.js CDN import must complete
+  // Wait for app module to fully initialize (the local PDF.js import must complete
   // before the change event listener is registered at the bottom of app.js)
   await page.waitForFunction(
     () => document.documentElement.dataset.appReady === 'true',

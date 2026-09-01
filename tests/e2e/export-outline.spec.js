@@ -11,7 +11,7 @@ import { readFileSync } from 'fs';
 import { join } from 'path';
 import { loadPDF, READER_URL, FIXTURES_DIR } from './helpers.js';
 
-const PDF_LIB_URL = 'https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/dist/pdf-lib.esm.min.js';
+const PDF_LIB_URL = '/vendor/pdf-lib/1.17.1/pdf-lib.esm.min.js';
 
 async function exportAndGetBytes(page) {
   const downloadPromise = page.waitForEvent('download', { timeout: 120000 });

@@ -4,10 +4,13 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "test": "vitest run",
+    "test": "npm run verify:vendor && npm run verify:runtime && npm run verify:cache && vitest run",
     "test:watch": "vitest",
     "test:e2e": "playwright test",
-    "test:all": "vitest run && playwright test",
+    "test:all": "npm test && playwright test",
+    "verify:cache": "node scripts/verify-cache-revision.mjs",
+    "verify:runtime": "node scripts/check-runtime-origins.mjs",
+    "verify:vendor": "node scripts/verify-vendor.mjs",
     "serve": "python3 -m http.server 8000"
   },
   "devDependencies": {

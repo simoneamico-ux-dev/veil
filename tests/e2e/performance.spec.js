@@ -25,8 +25,8 @@ test.describe('Performance timing', () => {
     const totalTime = Date.now() - startTime;
 
     // loadPDF waits for: appReady + file set + reader visible +
-    // veil animation + canvas render. On CI with CDN latency
-    // this can take a few seconds — 8s is generous but catches
+    // veil animation + canvas render. On CI, initial module loading
+    // can take a few seconds; 8s is generous but catches
     // major regressions.
     expect(totalTime).toBeLessThan(8000);
   });

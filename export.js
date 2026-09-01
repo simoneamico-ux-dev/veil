@@ -19,10 +19,10 @@
    * - Multi-script fonts: the invisible text layer needs fonts that
    *   cover the document's writing system. Noto Sans Regular handles
    *   Latin, Greek, Cyrillic and math symbols. For Arabic, Hebrew, CJK,
-   *   Indic and 18 other scripts, I lazy-load the matching Noto Sans
-   *   variant from CDN with fontkit for subsetting. detectScript() in
+   *   Indic and 18 other scripts, I lazy-load the matching local Noto Sans
+   *   variant with fontkit for subsetting. detectScript() in
    *   core.js identifies the script per text item. Each font is
-   *   downloaded once and cached across exports. Latin-only documents
+   *   loaded once and cached across exports. Latin-only documents
    *   never trigger any extra download. If a font download fails, the
    *   item falls back silently to Noto Sans Regular.
    *
@@ -71,14 +71,14 @@
    *
    * The file follows this flow:
    *
-   * 1. MODULE STATE (line 101)
-   * 2. INITIALIZATION AND PUBLIC API (line 150)
-   * 3. LAZY LOADERS (line 174)
-   * 4. PROGRESS UI (line 275)
-   * 5. LINK ANNOTATIONS (line 290)
-   * 6. DOCUMENT OUTLINE (line 433)
-   * 7. PER-PAGE EXPORT (line 525)
-   * 8. MAIN EXPORT ORCHESTRATOR (line 831)
+   * 1. MODULE STATE (line 102)
+   * 2. INITIALIZATION AND PUBLIC API (line 151)
+   * 3. LAZY LOADERS (line 175)
+   * 4. PROGRESS UI (line 270)
+   * 5. LINK ANNOTATIONS (line 285)
+   * 6. DOCUMENT OUTLINE (line 428)
+   * 7. PER-PAGE EXPORT (line 520)
+   * 8. MAIN EXPORT ORCHESTRATOR (line 826)
 */
 
 import {
@@ -95,21 +95,22 @@ import {
   transformPdfDestination,
 } from './core.js';
 
-import { preprocessCanvasForOcr } from './ocr.js';
+import { createTesseractWorker, preprocessCanvasForOcr } from './ocr.js';
+import { loadBinaryAsset } from './assets.js';
 
 
 // --- MODULE STATE ---
 
 let pdfLibModule = null;     // pdf-lib module (lazy-loaded on first export)
 let fontkitModule = null;    // fontkit for Unicode font embedding (lazy-loaded)
-let cachedFontBytes = null;  // Noto Sans Regular TTF bytes (downloaded once, reused)
+let cachedFontBytes = null;  // Noto Sans Regular TTF bytes (loaded once, reused)
 let exporting = false;
 let exportGeneration = 0;    // increments on every export/cancel, never decreases
 
 /*
  * I use different Noto Sans variants for different writing systems
  * (Arabic text needs Noto Sans Arabic, Chinese needs Noto Sans SC).
- * Each font is downloaded once and cached in fontBytesCache, then
+ * Each font is loaded once and cached in fontBytesCache, then
  * embedded once per export into fontRegistry. Latin-only documents
  * never trigger any download.
  *
@@ -173,9 +174,7 @@ export { exportGeneration };
 
 // --- LAZY LOADERS ---
 
-// Both pdf-lib and fontkit are loaded from CDN only when the user
-// clicks export for the first time. This keeps the initial page
-// load fast (zero export code downloaded until needed)
+// pdf-lib and fontkit load only when the user exports for the first time
 
 async function ensurePdfLib() {
   if (pdfLibModule) return pdfLibModule;
@@ -198,9 +197,7 @@ async function ensureUnicodeFont() {
 
   if (!cachedFontBytes) {
     try {
-      const resp = await fetch(ctx.DEPS.NOTO_SANS);
-      if (!resp.ok) throw new Error(`Font fetch ${resp.status}`);
-      cachedFontBytes = new Uint8Array(await resp.arrayBuffer());
+      cachedFontBytes = await loadBinaryAsset(ctx.DEPS.NOTO_SANS);
     } catch (e) {
       console.warn('Failed to load Unicode font:', e);
       return null;
@@ -212,11 +209,11 @@ async function ensureUnicodeFont() {
 
 /*
  * I select the correct Noto Sans variant for a given script. On the
- * first call for each script, I download the font from CDN and embed
- * it in the PDF. Subsequent calls return the cached PDFFont.
+ * first call for each script, I load and embed the font in the PDF.
+ * Subsequent calls return the cached PDFFont.
  *
  * Font bytes persist across exports (fontBytesCache) so a second
- * export skips the download entirely. PDFFont objects (fontRegistry)
+ * export skips the load entirely. PDFFont objects (fontRegistry)
  * are reset per export because they are tied to a specific
  * PDFDocument instance.
  *
@@ -243,15 +240,13 @@ async function getFontForScript(script, outPdf, latinFont, fontRegistry) {
   if (fontRegistry[script]) return fontRegistry[script];
 
   const depKey = SCRIPT_FONT_MAP[script];
-  const url = ctx.DEPS[depKey];
-  if (!url) return latinFont;
+  const asset = ctx.DEPS[depKey];
+  if (!asset) return latinFont;
 
-  // Download font bytes (once per script, cached across exports)
+  // Load font bytes once per script, then reuse them across exports
   if (!fontBytesCache[script]) {
     try {
-      const resp = await fetch(url);
-      if (!resp.ok) throw new Error(`Font fetch ${resp.status}`);
-      fontBytesCache[script] = new Uint8Array(await resp.arrayBuffer());
+      fontBytesCache[script] = await loadBinaryAsset(asset);
     } catch (e) {
       console.warn(`[Export] Failed to load font for ${script}:`, e);
       return latinFont;
@@ -886,11 +881,9 @@ export async function exportDarkPdf() {
     let exportWorker = null;
     if (ctx.isScannedDocument) {
       try {
-        const mod = await import(ctx.DEPS.TESSERACT);
-        const createWorker = mod.createWorker || (mod.default && mod.default.createWorker);
         const navLang = getNavigatorLanguage();
         const langs = navLang ? 'eng+' + navLang : 'eng';
-        exportWorker = await createWorker(langs, 1, { logger: () => {} });
+        exportWorker = await createTesseractWorker(langs);
       } catch (err) {
         console.warn('[Export] Failed to create OCR worker:', err);
       }

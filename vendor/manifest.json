@@ -1,0 +1,187 @@
+{
+  "schemaVersion": 1,
+  "maximumFileBytes": 8500000,
+  "assets": [
+    {
+      "id": "pdfjs",
+      "version": "5.4.149",
+      "license": "Apache-2.0",
+      "licenseFiles": ["vendor/licenses/pdfjs-Apache-2.0.txt"],
+      "source": "https://github.com/mozilla/pdf.js/releases/tag/v5.4.149",
+      "files": [
+        {
+          "path": "vendor/pdfjs/5.4.149/pdf.min.mjs",
+          "bytes": 394119,
+          "sha256": "a935133d4b2166e8e3cf28e288b1b889d0743285e1c4e6ab3c77f04704eb56f3"
+        },
+        {
+          "path": "vendor/pdfjs/5.4.149/pdf.worker.min.mjs",
+          "bytes": 1039207,
+          "sha256": "c964e291707ad492e6e90ff7f4f352b75e05ea2734c3dd3a80b94983b1b7ce3d"
+        }
+      ]
+    },
+    {
+      "id": "pdf-lib",
+      "version": "1.17.1",
+      "license": "MIT",
+      "licenseFiles": ["vendor/licenses/pdf-lib-MIT.md"],
+      "source": "https://www.npmjs.com/package/pdf-lib/v/1.17.1",
+      "files": [
+        {
+          "path": "vendor/pdf-lib/1.17.1/pdf-lib.esm.min.js",
+          "bytes": 523417,
+          "sha256": "72c052d97b4d5d9fa6cdbdcb7ad709f03d4ddb1122390cb3afeba4d88651d969"
+        }
+      ]
+    },
+    {
+      "id": "fontkit",
+      "version": "1.1.1",
+      "license": "MIT",
+      "licenseFiles": ["vendor/licenses/fontkit-MIT.md"],
+      "source": "https://www.npmjs.com/package/@pdf-lib/fontkit/v/1.1.1",
+      "tree": {
+        "path": "vendor/fontkit/1.1.1",
+        "fileCount": 2,
+        "bytes": 758582,
+        "sha256": "035cb7433a38c3100bd6e2104f854af76743c94320fd08ec75112cca1688ed40"
+      }
+    },
+    {
+      "id": "noto-export-fonts",
+      "version": "76fff9eee60dcef8381bfcae8d0b4311e2186e67",
+      "license": "OFL-1.1",
+      "licenseFiles": ["vendor/licenses/noto-OFL-1.1.txt"],
+      "source": "https://github.com/notofonts/notofonts.github.io/tree/76fff9eee60dcef8381bfcae8d0b4311e2186e67/fonts",
+      "tree": {
+        "path": "vendor/fonts/noto/76fff9eee60dcef8381bfcae8d0b4311e2186e67",
+        "fileCount": 20,
+        "bytes": 3739448,
+        "sha256": "b1d96d2d6acd2f8f997a0c109da426392c488a650b09302f0895eb8d099020b7"
+      }
+    },
+    {
+      "id": "noto-cjk-export-fonts",
+      "version": "2.004@f8d157532fbfaeda587e826d4cd5b21a49186f7c",
+      "license": "OFL-1.1",
+      "licenseFiles": ["vendor/licenses/noto-cjk-OFL-1.1.txt"],
+      "source": "https://github.com/notofonts/noto-cjk/tree/f8d157532fbfaeda587e826d4cd5b21a49186f7c/Sans/OTF",
+      "multipart": [
+        {
+          "path": "NotoSansCJKjp-Regular.otf",
+          "parts": [
+            "vendor/fonts/noto-cjk/2.004/NotoSansCJKjp-Regular.otf.part-00",
+            "vendor/fonts/noto-cjk/2.004/NotoSansCJKjp-Regular.otf.part-01"
+          ],
+          "bytes": 16467736,
+          "sha256": "68a3fc98800b2a27b371f2fb79991daf3633bd89309d4ffaa6946fd587f375b5"
+        },
+        {
+          "path": "NotoSansCJKkr-Regular.otf",
+          "parts": [
+            "vendor/fonts/noto-cjk/2.004/NotoSansCJKkr-Regular.otf.part-00",
+            "vendor/fonts/noto-cjk/2.004/NotoSansCJKkr-Regular.otf.part-01"
+          ],
+          "bytes": 16433112,
+          "sha256": "6bcb2a0703aa137e874fc2dffa85f6c21ba9a67fa329e81b8c801663af7e992a"
+        },
+        {
+          "path": "NotoSansCJKsc-Regular.otf",
+          "parts": [
+            "vendor/fonts/noto-cjk/2.004/NotoSansCJKsc-Regular.otf.part-00",
+            "vendor/fonts/noto-cjk/2.004/NotoSansCJKsc-Regular.otf.part-01"
+          ],
+          "bytes": 16437364,
+          "sha256": "2c76254f6fc379fddfce0a7e84fb5385bb135d3e399294f6eeb6680d0365b74b"
+        }
+      ]
+    },
+    {
+      "id": "ibm-plex-sans",
+      "version": "Google Fonts v23",
+      "license": "OFL-1.1",
+      "licenseFiles": ["vendor/licenses/ibm-plex-sans-OFL-1.1.txt"],
+      "source": "https://fonts.gstatic.com/s/ibmplexsans/v23/",
+      "sourceFiles": {
+        "vendor/fonts/ibm-plex-sans/23/ibm-plex-sans-italic-cyrillic-ext.woff2": "https://fonts.gstatic.com/s/ibmplexsans/v23/zYXEKVElMYYaJe8bpLHnCwDKhdTEG46kmUZQCX598fQbM4jw8V78x9OWIhqbQ5g3voKE7-jfBVSl7w.woff2",
+        "vendor/fonts/ibm-plex-sans/23/ibm-plex-sans-italic-cyrillic.woff2": "https://fonts.gstatic.com/s/ibmplexsans/v23/zYXEKVElMYYaJe8bpLHnCwDKhdTEG46kmUZQCX598fQbM4jw8V78x9OWIhqbQ5g-voKE7-jfBVSl7w.woff2",
+        "vendor/fonts/ibm-plex-sans/23/ibm-plex-sans-italic-greek.woff2": "https://fonts.gstatic.com/s/ibmplexsans/v23/zYXEKVElMYYaJe8bpLHnCwDKhdTEG46kmUZQCX598fQbM4jw8V78x9OWIhqbQ5g5voKE7-jfBVSl7w.woff2",
+        "vendor/fonts/ibm-plex-sans/23/ibm-plex-sans-italic-vietnamese.woff2": "https://fonts.gstatic.com/s/ibmplexsans/v23/zYXEKVElMYYaJe8bpLHnCwDKhdTEG46kmUZQCX598fQbM4jw8V78x9OWIhqbQ5g1voKE7-jfBVSl7w.woff2",
+        "vendor/fonts/ibm-plex-sans/23/ibm-plex-sans-italic-latin-ext.woff2": "https://fonts.gstatic.com/s/ibmplexsans/v23/zYXEKVElMYYaJe8bpLHnCwDKhdTEG46kmUZQCX598fQbM4jw8V78x9OWIhqbQ5g0voKE7-jfBVSl7w.woff2",
+        "vendor/fonts/ibm-plex-sans/23/ibm-plex-sans-italic-latin.woff2": "https://fonts.gstatic.com/s/ibmplexsans/v23/zYXEKVElMYYaJe8bpLHnCwDKhdTEG46kmUZQCX598fQbM4jw8V78x9OWIhqbQ5g6voKE7-jfBVQ.woff2",
+        "vendor/fonts/ibm-plex-sans/23/ibm-plex-sans-normal-cyrillic-ext.woff2": "https://fonts.gstatic.com/s/ibmplexsans/v23/zYXzKVElMYYaJe8bpLHnCwDKr932-G7dytD-Dmu1syxTKYbSB4ZhRNU.woff2",
+        "vendor/fonts/ibm-plex-sans/23/ibm-plex-sans-normal-cyrillic.woff2": "https://fonts.gstatic.com/s/ibmplexsans/v23/zYXzKVElMYYaJe8bpLHnCwDKr932-G7dytD-Dmu1syxaKYbSB4ZhRNU.woff2",
+        "vendor/fonts/ibm-plex-sans/23/ibm-plex-sans-normal-greek.woff2": "https://fonts.gstatic.com/s/ibmplexsans/v23/zYXzKVElMYYaJe8bpLHnCwDKr932-G7dytD-Dmu1syxdKYbSB4ZhRNU.woff2",
+        "vendor/fonts/ibm-plex-sans/23/ibm-plex-sans-normal-vietnamese.woff2": "https://fonts.gstatic.com/s/ibmplexsans/v23/zYXzKVElMYYaJe8bpLHnCwDKr932-G7dytD-Dmu1syxRKYbSB4ZhRNU.woff2",
+        "vendor/fonts/ibm-plex-sans/23/ibm-plex-sans-normal-latin-ext.woff2": "https://fonts.gstatic.com/s/ibmplexsans/v23/zYXzKVElMYYaJe8bpLHnCwDKr932-G7dytD-Dmu1syxQKYbSB4ZhRNU.woff2",
+        "vendor/fonts/ibm-plex-sans/23/ibm-plex-sans-normal-latin.woff2": "https://fonts.gstatic.com/s/ibmplexsans/v23/zYXzKVElMYYaJe8bpLHnCwDKr932-G7dytD-Dmu1syxeKYbSB4Zh.woff2"
+      },
+      "generatedFiles": [
+        "vendor/fonts/ibm-plex-sans/23/ibm-plex-sans.css"
+      ],
+      "tree": {
+        "path": "vendor/fonts/ibm-plex-sans/23",
+        "fileCount": 13,
+        "bytes": 206473,
+        "sha256": "4ad2cb702d2451be9711914a233b365d851198772151872b0afcb4a75b080d16"
+      }
+    },
+    {
+      "id": "tesseract.js",
+      "version": "5.1.1",
+      "license": "Apache-2.0",
+      "licenseFiles": [
+        "vendor/licenses/tesseract.js-Apache-2.0.md",
+        "vendor/licenses/tesseract.js-bundle-notices.txt",
+        "vendor/licenses/tesseract-worker-bundle-notices.txt"
+      ],
+      "source": "https://www.npmjs.com/package/tesseract.js/v/5.1.1",
+      "tree": {
+        "path": "vendor/tesseract.js/5.1.1",
+        "fileCount": 2,
+        "bytes": 190899,
+        "sha256": "848a7647aa0584867c97b347c2c614af1262054467142a7fdad6e26ce807599e"
+      }
+    },
+    {
+      "id": "tesseract.js-core",
+      "version": "5.1.1",
+      "license": "Apache-2.0",
+      "licenseFiles": ["vendor/licenses/tesseract-core-Apache-2.0.txt"],
+      "source": "https://www.npmjs.com/package/tesseract.js-core/v/5.1.1",
+      "tree": {
+        "path": "vendor/tesseract-core/5.1.1",
+        "fileCount": 2,
+        "bytes": 7876934,
+        "sha256": "6ba3d7247c004f40025d1a3994cece1eee804b776f13180eceba4c56692aaef8"
+      }
+    },
+    {
+      "id": "tesseract-language-data",
+      "version": "4.0.0_best_int@1.0.0",
+      "license": "Apache-2.0",
+      "licenseFiles": ["vendor/licenses/tesseract-data-license.txt"],
+      "source": "https://registry.npmjs.org/@tesseract.js-data/{language}/-/{language}-1.0.0.tgz",
+      "languages": [
+        "ara", "ces", "chi_sim", "dan", "deu", "ell", "eng", "fin", "fra",
+        "hin", "hun", "ita", "jpn", "kor", "nld", "nor", "pol", "por",
+        "ron", "rus", "spa", "swe", "tha", "tur", "ukr", "vie"
+      ],
+      "tree": {
+        "path": "vendor/tesseract-data/4.0.0_best_int",
+        "fileCount": 26,
+        "bytes": 52152726,
+        "sha256": "cb42a173f1467977c7ee742d5b7821c803008c3d67bcc87d82be4d6dceff21b2"
+      }
+    }
+  ],
+  "supportTrees": [
+    {
+      "path": "vendor/licenses",
+      "fileCount": 11,
+      "bytes": 60154,
+      "sha256": "dccc255e5345dcdbb83dc5e00d9cf69db0f1433a38352e7a30babc77f1dbb102"
+    }
+  ]
+}

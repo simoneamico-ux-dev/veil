@@ -80,23 +80,23 @@
    *     Maps the user's OS language to a Tesseract language code so the
    *     OCR worker starts with the right model from the beginning.
    *
-   * 13. SCANNED DOCUMENT DETECTION (line 754)
+   * 13. SCANNED DOCUMENT DETECTION (line 759)
    *     Samples multiple pages to determine if the PDF is a scan (one
    *     full-page image per page, almost no native text).
    *
-   * 14. OCR LANGUAGE DETECTION (line 783)
+   * 14. OCR LANGUAGE DETECTION (line 788)
    *     Detects the document language from character frequency and
    *     function words. Used as a fallback when navigator.languages
    *     doesn't provide a non-English language.
    *
-   * 15. SCRIPT DETECTION (line 932)
+   * 15. SCRIPT DETECTION (line 937)
    *     Identifies the writing system of a text string by scanning for
    *     Unicode range patterns. Used by the export pipeline to select
    *     the correct Noto Sans font variant for each text item, enabling
    *     proper rendering of Arabic, Hebrew, CJK, Indic and every other
    *     major writing system in exported PDFs.
    *
-   * 16. IMAGE CONTENT ANALYSIS (line 987)
+   * 16. IMAGE CONTENT ANALYSIS (line 992)
    *     Detects OCR overlays (Adobe Paper Capture scans with invisible
    *     text layer) using four independent signals: image coverage,
    *     text containment, character density, and blank paper analysis.
@@ -722,6 +722,11 @@ const BCP47_TO_TESSERACT = {
   tr: 'tur', uk: 'ukr', hi: 'hin', th: 'tha', vi: 'vie',
 };
 
+export const TESSERACT_LANGUAGE_CODES = Object.freeze([
+  'eng',
+  ...new Set(Object.values(BCP47_TO_TESSERACT)),
+]);
+
 /*
  * Returns the Tesseract language code for the user's primary
  * non-English language, or null if the user's system is English-only.
@@ -942,7 +947,7 @@ export function detectLanguageFromText(text) {
  * so the base codepoints are all we need to detect the script.
  *
  * The ranges below cover every major living writing system. Each font
- * is lazy-loaded from CDN only when a document actually contains that
+ * is lazy-loaded from a versioned local path only when a document contains that
  * script, so Latin-only users pay zero cost.
  *
  * CJK detection: Japanese uses Hiragana/Katakana (unique to Japanese),

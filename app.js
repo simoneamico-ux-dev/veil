@@ -9,7 +9,7 @@
    * rendering needs to know about eviction. Splitting would distribute
    * the complexity across files without reducing it, and the resulting
    * modules would not be reusable or independently testable. The
-   * modules I did extract (core.js, ocr.js, export.js, session.js)
+   * modules I did extract (core.js, ocr.js, export.js, session.js, assets.js)
    * are genuinely independent and can be taken into another project.
    *
    * The pure functions live in core.js, the OCR pipeline in ocr.js,
@@ -73,7 +73,7 @@
    *   background). The pasted text arrives in the target app's
    *   default font with no veil artifacts
    *
-   * The test suite (305 unit + 52 e2e) acts as the "eyes" for this
+   * The test suite (412 unit + 86 e2e) acts as the "eyes" for this
    * file, following Salvatore Sanfilippo's (antirez) insight that
    * without tests, a coding agent iterates blind. The pure functions
    * are tested in core.js. The integration (does the page render,
@@ -85,84 +85,96 @@
    *
    * The file follows this flow:
    *
-   * 1. CONSTANTS (line 226)
-   * 2. STATE (line 316)
-   * 3. DOM REFERENCES (line 349)
-   * 4. FOCUS MODE (line 401)
-   * 5. ERROR DISPLAY (line 565)
-   * 6. SESSION PERSISTENCE (line 625)
-   * 7. FILE HANDLING (line 893)
-   * 8. PDF LOADING (line 939)
-   * 9. SCANNED DOCUMENT DETECTION (line 1020)
-   * 10. OCR LOADING INDICATOR (line 1079)
-   * 11. CLEANUP (line 1370)
-   * 12. SCALE CALCULATION (line 1382)
-   * 13. VIRTUAL SCROLLING (line 1411)
+   * 1. CONSTANTS (line 238)
+   * 2. STATE (line 328)
+   * 3. DOM REFERENCES (line 361)
+   * 4. FOCUS MODE (line 413)
+   * 5. ERROR DISPLAY (line 577)
+   * 6. SESSION PERSISTENCE (line 637)
+   * 7. FILE HANDLING (line 905)
+   * 8. PDF LOADING (line 951)
+   * 9. SCANNED DOCUMENT DETECTION (line 1032)
+   * 10. OCR LOADING INDICATOR (line 1091)
+   * 11. CLEANUP (line 1382)
+   * 12. SCALE CALCULATION (line 1394)
+   * 13. VIRTUAL SCROLLING (line 1423)
    *     Page geometry, container pool, reconciliation, eviction
-   * 14. DEVICE DETECTION AND MEMORY PROFILES (line 1846)
-   * 15. UNIFIED SCROLL COORDINATOR (line 1894)
-   * 16. CANVAS POOL (line 1946)
-   * 17. ENGINE RESET (line 1990)
-   * 18. RENDER QUEUE (line 2082)
-   * 19. PAGE RENDERING (line 2159)
-   * 20. ALREADY-DARK DETECTION (line 2323)
-   * 21. TEXT LAYER (line 2341)
+   * 14. DEVICE DETECTION AND MEMORY PROFILES (line 1858)
+   * 15. UNIFIED SCROLL COORDINATOR (line 1906)
+   * 16. CANVAS POOL (line 1958)
+   * 17. ENGINE RESET (line 2002)
+   * 18. RENDER QUEUE (line 2094)
+   * 19. PAGE RENDERING (line 2171)
+   * 20. ALREADY-DARK DETECTION (line 2335)
+   * 21. TEXT LAYER (line 2353)
    *     Single-column: flow layout with paddingTop advancement.
    *     Multi-column: detected via backward Y jump in content stream,
    *     rendered with flex-row wrapper keeping everything in flow.
-   * 22. MULTI-COLUMN HELPERS (line 2497)
+   * 22. MULTI-COLUMN HELPERS (line 2509)
    *     Column detection, order-preserving grouping, line builder
-   * 23. LINK ANNOTATION LAYER (line 2723)
-   * 24. DARK MODE LOGIC (line 2829)
-   * 25. CURRENT PAGE TRACKING (line 2865)
-   * 26. TOGGLE BUTTON STATE (line 2897)
-   * 27. NAVIGATION (line 2925)
-   * 28. EVENT LISTENERS (line 3028)
+   * 23. LINK ANNOTATION LAYER (line 2735)
+   * 24. DARK MODE LOGIC (line 2841)
+   * 25. CURRENT PAGE TRACKING (line 2877)
+   * 26. TOGGLE BUTTON STATE (line 2909)
+   * 27. NAVIGATION (line 2937)
+   * 28. EVENT LISTENERS (line 3040)
    *     Option/Alt OCR, drop zone, toolbar, keyboard, presentation
-   * 29. ZOOM (line 3254)
-   * 30. RESIZE (line 3382)
-   * 31. APP SHELL LOADER AND BOOTSTRAP (line 3449)
+   * 29. ZOOM (line 3266)
+   * 30. RESIZE (line 3394)
+   * 31. APP SHELL LOADER AND BOOTSTRAP (line 3461)
 */
 
-// CDN dependencies, single source of truth for all external library URLs.
-// Update version numbers here only; they propagate to all import sites.
+const vendorAsset = (path) => new URL(`./vendor/${path}`, import.meta.url).href;
+const notoFont = (fileName) => vendorAsset(
+  `fonts/noto/76fff9eee60dcef8381bfcae8d0b4311e2186e67/${fileName}`,
+);
+const multipartFont = (fileName, totalBytes) => ({
+  parts: [
+    vendorAsset(`fonts/noto-cjk/2.004/${fileName}.part-00`),
+    vendorAsset(`fonts/noto-cjk/2.004/${fileName}.part-01`),
+  ],
+  totalBytes,
+});
+
+// Optional export and OCR assets remain lazy-loaded from versioned local paths
 const DEPS = {
-  PDFJS:        'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/5.4.149/pdf.min.mjs',
-  PDFJS_WORKER: 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/5.4.149/pdf.worker.min.mjs',
-  TESSERACT:    'https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.esm.min.js',
-  PDF_LIB:      'https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/dist/pdf-lib.esm.min.js',
-  FONTKIT:       'https://esm.sh/@pdf-lib/fontkit@1.1.1',
-  NOTO_SANS:    'https://cdn.jsdelivr.net/gh/notofonts/notofonts.github.io/fonts/NotoSans/hinted/ttf/NotoSans-Regular.ttf',
+  PDFJS_WORKER:    vendorAsset('pdfjs/5.4.149/pdf.worker.min.mjs'),
+  TESSERACT:       vendorAsset('tesseract.js/5.1.1/tesseract.esm.min.js'),
+  TESSERACT_WORKER: vendorAsset('tesseract.js/5.1.1/worker.min.js'),
+  TESSERACT_CORE:  vendorAsset('tesseract-core/5.1.1'),
+  TESSERACT_LANG:  vendorAsset('tesseract-data/4.0.0_best_int'),
+  PDF_LIB:         vendorAsset('pdf-lib/1.17.1/pdf-lib.esm.min.js'),
+  FONTKIT:         vendorAsset('fontkit/1.1.1/fontkit.esm.js'),
+  NOTO_SANS:       notoFont('NotoSans-Regular.ttf'),
 
   // Script-specific Noto Sans variants for export text layer.
   // Each is lazy-loaded only when a document contains that script.
-  // The service worker caches them automatically (jsdelivr is in
-  // CDN_CACHE_PATTERNS). Keys match SCRIPT_FONT_MAP in export.js
-  NOTO_SANS_ARABIC:     'https://cdn.jsdelivr.net/gh/notofonts/notofonts.github.io/fonts/NotoSansArabic/hinted/ttf/NotoSansArabic-Regular.ttf',
-  NOTO_SANS_HEBREW:     'https://cdn.jsdelivr.net/gh/notofonts/notofonts.github.io/fonts/NotoSansHebrew/hinted/ttf/NotoSansHebrew-Regular.ttf',
-  NOTO_SANS_DEVANAGARI: 'https://cdn.jsdelivr.net/gh/notofonts/notofonts.github.io/fonts/NotoSansDevanagari/hinted/ttf/NotoSansDevanagari-Regular.ttf',
-  NOTO_SANS_BENGALI:    'https://cdn.jsdelivr.net/gh/notofonts/notofonts.github.io/fonts/NotoSansBengali/hinted/ttf/NotoSansBengali-Regular.ttf',
-  NOTO_SANS_GURMUKHI:   'https://cdn.jsdelivr.net/gh/notofonts/notofonts.github.io/fonts/NotoSansGurmukhi/hinted/ttf/NotoSansGurmukhi-Regular.ttf',
-  NOTO_SANS_GUJARATI:   'https://cdn.jsdelivr.net/gh/notofonts/notofonts.github.io/fonts/NotoSansGujarati/hinted/ttf/NotoSansGujarati-Regular.ttf',
-  NOTO_SANS_TAMIL:      'https://cdn.jsdelivr.net/gh/notofonts/notofonts.github.io/fonts/NotoSansTamil/hinted/ttf/NotoSansTamil-Regular.ttf',
-  NOTO_SANS_TELUGU:     'https://cdn.jsdelivr.net/gh/notofonts/notofonts.github.io/fonts/NotoSansTelugu/hinted/ttf/NotoSansTelugu-Regular.ttf',
-  NOTO_SANS_KANNADA:    'https://cdn.jsdelivr.net/gh/notofonts/notofonts.github.io/fonts/NotoSansKannada/hinted/ttf/NotoSansKannada-Regular.ttf',
-  NOTO_SANS_MALAYALAM:  'https://cdn.jsdelivr.net/gh/notofonts/notofonts.github.io/fonts/NotoSansMalayalam/hinted/ttf/NotoSansMalayalam-Regular.ttf',
-  NOTO_SANS_SINHALA:    'https://cdn.jsdelivr.net/gh/notofonts/notofonts.github.io/fonts/NotoSansSinhala/hinted/ttf/NotoSansSinhala-Regular.ttf',
-  NOTO_SANS_THAI:       'https://cdn.jsdelivr.net/gh/notofonts/notofonts.github.io/fonts/NotoSansThai/hinted/ttf/NotoSansThai-Regular.ttf',
-  NOTO_SANS_LAO:        'https://cdn.jsdelivr.net/gh/notofonts/notofonts.github.io/fonts/NotoSansLao/hinted/ttf/NotoSansLao-Regular.ttf',
-  NOTO_SANS_TIBETAN:    'https://cdn.jsdelivr.net/gh/notofonts/notofonts.github.io/fonts/NotoSerifTibetan/hinted/ttf/NotoSerifTibetan-Regular.ttf',
-  NOTO_SANS_MYANMAR:    'https://cdn.jsdelivr.net/gh/notofonts/notofonts.github.io/fonts/NotoSansMyanmar/hinted/ttf/NotoSansMyanmar-Regular.ttf',
-  NOTO_SANS_GEORGIAN:   'https://cdn.jsdelivr.net/gh/notofonts/notofonts.github.io/fonts/NotoSansGeorgian/hinted/ttf/NotoSansGeorgian-Regular.ttf',
-  NOTO_SANS_ARMENIAN:   'https://cdn.jsdelivr.net/gh/notofonts/notofonts.github.io/fonts/NotoSansArmenian/hinted/ttf/NotoSansArmenian-Regular.ttf',
-  NOTO_SANS_ETHIOPIC:   'https://cdn.jsdelivr.net/gh/notofonts/notofonts.github.io/fonts/NotoSansEthiopic/hinted/ttf/NotoSansEthiopic-Regular.ttf',
-  NOTO_SANS_KHMER:      'https://cdn.jsdelivr.net/gh/notofonts/notofonts.github.io/fonts/NotoSansKhmer/hinted/ttf/NotoSansKhmer-Regular.ttf',
-  NOTO_SANS_JP:         'https://cdn.jsdelivr.net/gh/notofonts/noto-cjk/Sans/OTF/Japanese/NotoSansCJKjp-Regular.otf',
-  NOTO_SANS_KR:         'https://cdn.jsdelivr.net/gh/notofonts/noto-cjk/Sans/OTF/Korean/NotoSansCJKkr-Regular.otf',
-  NOTO_SANS_SC:         'https://cdn.jsdelivr.net/gh/notofonts/noto-cjk/Sans/OTF/SimplifiedChinese/NotoSansCJKsc-Regular.otf',
+  // Keys match SCRIPT_FONT_MAP in export.js
+  NOTO_SANS_ARABIC:     notoFont('NotoSansArabic-Regular.ttf'),
+  NOTO_SANS_HEBREW:     notoFont('NotoSansHebrew-Regular.ttf'),
+  NOTO_SANS_DEVANAGARI: notoFont('NotoSansDevanagari-Regular.ttf'),
+  NOTO_SANS_BENGALI:    notoFont('NotoSansBengali-Regular.ttf'),
+  NOTO_SANS_GURMUKHI:   notoFont('NotoSansGurmukhi-Regular.ttf'),
+  NOTO_SANS_GUJARATI:   notoFont('NotoSansGujarati-Regular.ttf'),
+  NOTO_SANS_TAMIL:      notoFont('NotoSansTamil-Regular.ttf'),
+  NOTO_SANS_TELUGU:     notoFont('NotoSansTelugu-Regular.ttf'),
+  NOTO_SANS_KANNADA:    notoFont('NotoSansKannada-Regular.ttf'),
+  NOTO_SANS_MALAYALAM:  notoFont('NotoSansMalayalam-Regular.ttf'),
+  NOTO_SANS_SINHALA:    notoFont('NotoSansSinhala-Regular.ttf'),
+  NOTO_SANS_THAI:       notoFont('NotoSansThai-Regular.ttf'),
+  NOTO_SANS_LAO:        notoFont('NotoSansLao-Regular.ttf'),
+  NOTO_SANS_TIBETAN:    notoFont('NotoSerifTibetan-Regular.ttf'),
+  NOTO_SANS_MYANMAR:    notoFont('NotoSansMyanmar-Regular.ttf'),
+  NOTO_SANS_GEORGIAN:   notoFont('NotoSansGeorgian-Regular.ttf'),
+  NOTO_SANS_ARMENIAN:   notoFont('NotoSansArmenian-Regular.ttf'),
+  NOTO_SANS_ETHIOPIC:   notoFont('NotoSansEthiopic-Regular.ttf'),
+  NOTO_SANS_KHMER:      notoFont('NotoSansKhmer-Regular.ttf'),
+  NOTO_SANS_JP:         multipartFont('NotoSansCJKjp-Regular.otf', 16467736),
+  NOTO_SANS_KR:         multipartFont('NotoSansCJKkr-Regular.otf', 16433112),
+  NOTO_SANS_SC:         multipartFont('NotoSansCJKsc-Regular.otf', 16437364),
 };
 
-import * as pdfjsLib from 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/5.4.149/pdf.min.mjs';
+import * as pdfjsLib from './vendor/pdfjs/5.4.149/pdf.min.mjs';
 
 import {
   initExport,

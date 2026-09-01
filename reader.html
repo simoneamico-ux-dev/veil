@@ -28,8 +28,8 @@
   a screen reader announcer div broadcasts dynamic events, and
   the dark mode toggle uses aria-pressed.
 
-  Security: Content-Security-Policy restricts script sources to self
-  and the three CDNs used by the app. Inline scripts are blocked.
+  Security: Content-Security-Policy keeps runtime resources same-origin.
+  Inline scripts are blocked; OCR is allowed to compile WebAssembly.
 -->
 
   <meta charset="UTF-8">
@@ -48,19 +48,17 @@
   <meta name="twitter:title" content="veil - open any PDF in dark mode" />
   <meta name="twitter:description" content="Open any PDF in true dark mode. Images preserved, links intact." />
   <meta name="twitter:image" content="https://veil.simoneamico.com/icon/og-image.png" />
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://esm.sh 'unsafe-eval'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com https://cdn.jsdelivr.net; connect-src 'self' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://esm.sh https://fonts.googleapis.com https://fonts.gstatic.com blob: data:; img-src 'self' blob: data:; worker-src 'self' blob: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'wasm-unsafe-eval'; style-src 'self' 'unsafe-inline'; font-src 'self'; connect-src 'self'; img-src 'self' blob: data:; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'">
   <meta name="mobile-web-app-capable" content="yes">
   <link rel="manifest" href="manifest.json">
   <link rel="icon" type="image/svg+xml" href="icon/favicon.svg">
   <link rel="icon" type="image/png" sizes="192x192" href="icon/manifest-icon.png">
   <link rel="apple-touch-icon" href="icon/apple-touch-icon.png">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+  <link href="vendor/fonts/ibm-plex-sans/23/ibm-plex-sans.css" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
   <!-- Hint the browser to start downloading PDF.js before the import
        statement in app.js is parsed. Saves ~100-200ms on first load -->
-  <link rel="modulepreload" href="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/5.4.149/pdf.min.mjs">
+  <link rel="modulepreload" href="vendor/pdfjs/5.4.149/pdf.min.mjs">
 </head>
 <body>
 

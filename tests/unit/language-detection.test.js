@@ -1,5 +1,23 @@
 import { describe, it, expect, vi } from 'vitest';
-import { detectLanguageFromText, getNavigatorLanguage } from '../../core.js';
+import { readdirSync } from 'fs';
+import { resolve } from 'path';
+import {
+  detectLanguageFromText,
+  getNavigatorLanguage,
+  TESSERACT_LANGUAGE_CODES,
+} from '../../core.js';
+
+describe('Tesseract language assets', () => {
+  it('includes a local model for every selectable language', () => {
+    const modelDirectory = resolve('vendor/tesseract-data/4.0.0_best_int');
+    const shippedLanguages = readdirSync(modelDirectory)
+      .filter(name => name.endsWith('.traineddata.gz'))
+      .map(name => name.replace('.traineddata.gz', ''))
+      .sort();
+
+    expect(shippedLanguages).toEqual([...TESSERACT_LANGUAGE_CODES].sort());
+  });
+});
 
 describe('detectLanguageFromText', () => {
 

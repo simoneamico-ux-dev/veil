@@ -35,9 +35,7 @@
 // const needsOcr = isScannedDocument || true; // always create - native PDFs may have images
 // if (needsOcr) {
 //   try {
-//     const mod = await import('https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.esm.min.js');
-//     const createWorker = mod.createWorker || (mod.default && mod.default.createWorker);
-//     exportWorker = await createWorker('eng', 1, { logger: () => {} });
+//     exportWorker = await createTesseractWorker('eng');
 //   } catch (err) {
 //     console.warn('[Export] Failed to create OCR worker:', err);
 //   }

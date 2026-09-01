@@ -192,8 +192,8 @@ html {
 }
 
 /*
- * Font stack: IBM Plex Sans is the primary (loaded from Google Fonts).
- * If it fails (offline on first visit, CDN down), the fallbacks ensure
+ * Font stack: IBM Plex Sans is the primary local interface font.
+ * If it fails to load, the fallbacks ensure
  * the user sees their OS native font instead of a generic serif:
  * -apple-system (Safari), BlinkMacSystemFont (Chrome on Mac),
  * Segoe UI (Windows), system-ui (universal), sans-serif (last resort)

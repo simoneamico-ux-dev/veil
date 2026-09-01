@@ -56,9 +56,9 @@
    * 5. FINGERPRINTING AND TEXT DETECTION (line 176)
    * 6. QUEUE PROCESSOR (line 256)
    * 7. TESSERACT WORKER (line 305)
-   * 8. IMAGE REGION OCR (line 350)
-   * 9. OCR TEXT LAYER BUILDER (line 557)
-   * 10. TEXT LAYER SCHEDULING (line 726)
+   * 8. IMAGE REGION OCR (line 358)
+   * 9. OCR TEXT LAYER BUILDER (line 565)
+   * 10. TEXT LAYER SCHEDULING (line 734)
 */
 
 import {
@@ -326,16 +326,9 @@ export async function ensureTesseractWorker() {
 
   tesseractLoading = true;
   try {
-    const mod = await import(ctx.DEPS.TESSERACT);
-    const createWorker = mod.createWorker || (mod.default && mod.default.createWorker);
-    if (!createWorker) throw new Error('createWorker not found in Tesseract module');
-
     const navLang = getNavigatorLanguage();
     const langs = navLang ? 'eng+' + navLang : 'eng';
-
-    tesseractWorker = await createWorker(langs, 1, {
-      logger: () => {},
-    });
+    tesseractWorker = await createTesseractWorker(langs);
 
     return tesseractWorker;
   } catch (err) {
@@ -344,6 +337,21 @@ export async function ensureTesseractWorker() {
   } finally {
     tesseractLoading = false;
   }
+}
+
+export async function createTesseractWorker(langs) {
+  const mod = await import(ctx.DEPS.TESSERACT);
+  const createWorker = mod.createWorker || (mod.default && mod.default.createWorker);
+  if (!createWorker) throw new Error('createWorker not found in Tesseract module');
+
+  return createWorker(langs, 1, {
+    workerPath: ctx.DEPS.TESSERACT_WORKER,
+    corePath: ctx.DEPS.TESSERACT_CORE,
+    langPath: ctx.DEPS.TESSERACT_LANG,
+    cachePath: 'veil-tesseract-4.0.0_best_int',
+    workerBlobURL: false, // Keep the worker inside the same-origin CSP
+    logger: () => {},
+  });
 }
 
 
